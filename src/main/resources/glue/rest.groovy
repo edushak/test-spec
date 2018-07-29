@@ -3,10 +3,14 @@ import org.edushak.testspec.util.RestHelper
 
 import static cucumber.api.groovy.EN.*
 
-final List builtInResponceAttributes = ['status','statusLine','contentType','reasonPhrase']
+final List builtInResponseFields = ['status','statusLine','contentType','reasonPhrase']
 
-When(~/^I send (GET|POST|PUT|DELETE|HEAD) request with parameters to (.*)$/) { String method, String endpoint, String tokens ->
-    // endpoint = Common.detokenize(endpoint, binding.variables)
+When(~/^I send (GET|POST|PUT|DELETE|HEAD) request to (.*)$/) { String method, String endpoint ->
+    endpoint = Helper.detokenize(endpoint, binding.variables, Helper.Engines.GString)
+    _restResponse = invokeAndSaveResponse(endpoint, method, [:], [:])
+}
+When(~/^I send (GET|POST|PUT|DELETE|HEAD) request with parameters to (.*) as:$/) { String method, String endpoint, String tokens ->
+    endpoint = Helper.detokenize(endpoint, binding.variables, Helper.Engines.GString)
 
     ConfigObject params = new ConfigSlurper().parse(tokens)
     Map headersMap = null
@@ -32,7 +36,7 @@ Then(~/^rest response (status|statusLine|contentType|reasonPhrase|.*) (==|contai
         operator = 'equals'
     }
 
-    if (what in builtInResponceAttributes) {
+    if (what in builtInResponseFields) {
         if (what == 'reasonPhrase') {
             assert _restResponse.data.error.reason."$operator"(expectedValue)
         } else {
@@ -44,19 +48,20 @@ Then(~/^rest response (status|statusLine|contentType|reasonPhrase|.*) (==|contai
     }
 }
 
-Then(~/^response text should (be|contain|match) (.*)$/) { String operator, String expectedValue ->
+Then(~/^response text should( not)? (be|contain|match) (.*)$/) { String not, String operator, String expectedValue ->
     expectedValue = normalizeValue(expectedValue)
     if (expectedValue.startsWith('$') || Helper.isClosure(expectedValue)) {
         // expectedValue = normalizeParameter(expectedValue) // TODO
         expectedValue = Helper.evaluate(expectedValue, binding)
     }
+    boolean expected = (not == null)
     String plainText = _restResponse.plainText
     if (operator == 'be') {
-        assert plainText == expectedValue
+        assert (plainText == expectedValue) == expected
     } else if(operator == 'contain'){
-        assert plainText?.contains(expectedValue)
+        assert (plainText?.contains(expectedValue)) == expected
     } else {
-        assert plainText ==~ expectedValue
+        assert (plainText ==~ expectedValue) == expected
     }
 }
 
