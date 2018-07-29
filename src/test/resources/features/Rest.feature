@@ -1,4 +1,4 @@
-Feature: Git API
+Feature: REST steps usage examples
 
   Scenario: setup
     Given I execute code "to set user dynamically":
