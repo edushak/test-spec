@@ -1,0 +1,87 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+}
+group 'test-spec'
+version '0.0.1'
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.15'
+
+    // compile 'org.xerial:sqlite-jdbc:3.8.11.1'
+    // compile group: 'org.codehaus.gpars', name: 'gpars', version: '1.2.1'
+
+/*
+    compile "org.seleniumhq.selenium:selenium-support:${selenium_rev}"
+    compile "org.seleniumhq.selenium:selenium-api:${selenium_rev}"
+    compile "org.seleniumhq.selenium:selenium-firefox-driver:${selenium_rev}"
+    compile "org.seleniumhq.selenium:selenium-chrome-driver:${selenium_rev}"
+    compile "org.seleniumhq.selenium:selenium-ie-driver:${selenium_rev}"
+    compile "org.seleniumhq.selenium:selenium-remote-driver:${selenium_rev}"
+    compile "org.seleniumhq.selenium:selenium-server:${selenium_rev}"
+
+    // compile "org.codehaus.geb:geb-core:${geb_rev}"
+    // https://mvnrepository.com/artifact/org.gebish/geb-core
+    compile group: 'org.gebish', name: 'geb-core', version: '2.1'
+*/
+
+    compile 'info.cukes:gherkin:2.12.2'
+    compile "info.cukes:cucumber-groovy:1.2.5"
+    // compile "info.cukes:cucumber-java:${cucumber_rev}"
+    // compile "info.cukes:cucumber-core:${cucumber_rev}"
+    // compile "info.cukes:cucumber-junit:${cucumber_rev}"
+
+    // https://mvnrepository.com/artifact/org.codehaus.groovy.modules.http-builder/http-builder
+    compile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
+
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+
+    // testCompile group: 'org.testng', name: 'testng', version: '6.11'
+    // testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+configurations {
+    cucumberRuntime { extendsFrom testRuntime }
+}
+
+task cucumber() {
+    dependsOn testClasses
+    doLast {
+        javaexec {
+            main = "cucumber.api.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = [
+                    '--plugin', 'pretty',
+                    '--tags', '~@wip',
+                    '--glue', 'src/main/resources/glue', // was: 'src/test/groovy/steps'
+                    'src/test/resources/features'
+            ]
+        }
+    }
+}
+
+task startSeleniumHub() << {
+    ant.java(classname : 'org.openqa.grid.selenium.GridLauncher',
+            fork:true,
+            classpath : configurations.runtime.asPath
+    ) {
+        arg(value : '-role')
+        arg(value : 'hub')
+    }
+}
+
+task startSeleniumNode() << {
+    ant.java(classname : 'org.openqa.grid.selenium.GridLauncher',
+            fork:true,
+            classpath : configurations.runtime.asPath) {
+        arg(value : '-role')
+        arg(value : 'node')
+        arg(value : '-hub')
+        arg(value : 'http://localhost:4444/grid/register')
+        arg(value : "-Dwebdriver.firefox.bin=${webdriver_firefox_bin}")
+    }
+}
