@@ -26,7 +26,7 @@ When(~/^I execute code "([^"]*)"( asynchronously)?:$/) { String descr, String as
     executeCodeFacade(async, code)
 }
 
-When(~/I execute command: (.*)$/) { String command -> // ( asynchronously)?   String async,
+When(~/^I execute command: (.*)$/) { String command -> // ( asynchronously)?   String async,
     command = normalizeParameter(command, true)
     if (Helper.isClosure(command)) {
         command = Helper.evaluate(command, binding)
@@ -34,8 +34,18 @@ When(~/I execute command: (.*)$/) { String command -> // ( asynchronously)?   St
     commandResults = executeCommand(command) // , async
     binding.setVariable('_lastCommandResult', commandResults)
 }
-Then(~/last command exit code should be (\d+)/) { int expectedExitCode ->
+Then(~/^last command exit code should be (\d+)$/) { int expectedExitCode ->
     assert commandResults.exitCode == expectedExitCode
+}
+Then(~/^last command (STDOUT|STDERR) should (be|contain|match) (.*)$/) { String outOrErr, String operator, String expectedValue ->
+    expectedValue = noQuotes(expectedValue)
+    if (operator == 'be') {
+        assert commandResults?."$outOrErr" == expectedValue
+    } else if (operator == 'contain') {
+        assert commandResults?."$outOrErr".contains(expectedValue)
+    } else {
+        assert commandResults?."$outOrErr" ==~ expectedValue
+    }
 }
 Map executeCommand(String command, async = null) {
     List commandForOs = getOsPrefix() + command
@@ -49,8 +59,8 @@ Map executeCommand(String command, async = null) {
     return [
         command : commandForOs,
         exitCode: exitCode,
-        stdOut  : stdOutBuilder.toString().trim(),
-        stdErr  : stdErrBuilder.toString().trim(),
+        STDOUT  : stdOutBuilder.toString().trim(),
+        STDERR  : stdErrBuilder.toString().trim(),
     ]
 }
 
