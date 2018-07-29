@@ -10,9 +10,12 @@ version '0.0.1'
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.15'
+    compile group: 'org.codehaus.gpars', name: 'gpars', version: '1.2.1'
+
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'org.slf4j:slf4j-simple:1.7.25'
 
     // compile 'org.xerial:sqlite-jdbc:3.8.11.1'
-    // compile group: 'org.codehaus.gpars', name: 'gpars', version: '1.2.1'
 
 /*
     compile "org.seleniumhq.selenium:selenium-support:${selenium_rev}"
