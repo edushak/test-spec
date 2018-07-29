@@ -1,8 +1,18 @@
 package org.edushak.testspec.util
 
+import groovy.text.GStringTemplateEngine
+import groovy.text.StreamingTemplateEngine
+import groovy.text.Template
+import groovy.text.TemplateEngine
+import groovy.transform.Memoized
 import org.codehaus.groovy.control.CompilationFailedException
 
 class Helper {
+
+    static class Engines {
+        public static final TemplateEngine GString = new GStringTemplateEngine()
+        public static final TemplateEngine Streaming = new StreamingTemplateEngine()
+    }
 
     static closureMatcher = /^(?s)\{.*\}$/,
             closureCallMatcher = /^(?s)\{.*\}\s*.\s*call\s\(.*\).*$/
@@ -14,6 +24,28 @@ class Helper {
         } else {
             false
         }
+    }
+
+    static boolean isParametrizedClosure(String expression) {
+        if (isClosure(expression)) {
+            String str = expression?.toString()?.trim()
+            int arrowIndex = str.indexOf('->')
+            arrowIndex > -1 && !str.substring(1, arrowIndex).trim().isEmpty()
+        } else {
+            false
+        }
+    }
+
+    static boolean isSelector(String input) {
+        isCssSelector(input) || isXPathSelector(input)
+    }
+    static boolean isCssSelector(String input) {
+        String str = input?.toString()?.trim()
+        str && str.startsWith('$(') && !str.startsWith('$(By.xpath') && str.endsWith(')') || (str.endsWith(']') && str.contains('['))
+    }
+    static boolean isXPathSelector(String input) {
+        String str = input?.toString()?.trim()
+        str && (str.startsWith('$x(') || str.startsWith('$(By.xpath')) && str.endsWith(')') || (str.endsWith(']') && str.contains('['))
     }
 
     static Object evaluate(String expression, Binding binding, boolean wrapIntoClosure = false) {
@@ -82,5 +114,25 @@ class Helper {
             return str[1..-2]
         }
         return str
+    }
+
+    static String detokenize(String templateSource, Map tokens, TemplateEngine engine = Engines.Streaming) {
+        getTemplate(templateSource as String, engine)?.make(tokens)
+    }
+
+    @Memoized
+    static Template getTemplate(String templateStr, TemplateEngine engine) {
+        if (templateStr == null) {
+            return null
+        }
+        engine.createTemplate(templateStr)
+    }
+
+    @Memoized
+    static Template getTemplate(File templateFile, TemplateEngine engine) {
+        if (templateFile == null) {
+            return null
+        }
+        engine.createTemplate(templateFile.text)
     }
 }
