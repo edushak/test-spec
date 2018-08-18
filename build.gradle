@@ -10,12 +10,10 @@ version '0.0.1'
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.15'
-    compile group: 'org.codehaus.gpars', name: 'gpars', version: '1.2.1'
+    compile 'org.codehaus.gpars:gpars:1.2.1'
 
     compile 'org.slf4j:slf4j-api:1.7.25'
     compile 'org.slf4j:slf4j-simple:1.7.25'
-
-    // compile 'org.xerial:sqlite-jdbc:3.8.11.1'
 
 /*
     compile "org.seleniumhq.selenium:selenium-support:${selenium_rev}"
@@ -28,8 +26,8 @@ dependencies {
 
     // compile "org.codehaus.geb:geb-core:${geb_rev}"
     // https://mvnrepository.com/artifact/org.gebish/geb-core
-    compile group: 'org.gebish', name: 'geb-core', version: '2.1'
 */
+    compile group: 'org.gebish', name: 'geb-core', version: '2.1'
 
     compile 'info.cukes:gherkin:2.12.2'
     compile "info.cukes:cucumber-groovy:1.2.5"
@@ -40,7 +38,10 @@ dependencies {
     // https://mvnrepository.com/artifact/org.codehaus.groovy.modules.http-builder/http-builder
     compile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
 
+    // compile 'org.xerial:sqlite-jdbc:3.8.11.1'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
+
+
     testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
 
     // testCompile group: 'org.testng', name: 'testng', version: '6.11'

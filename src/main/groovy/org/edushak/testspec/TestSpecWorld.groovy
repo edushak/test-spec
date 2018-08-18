@@ -1,5 +1,7 @@
 package org.edushak.testspec
 
+import geb.Browser
+import geb.binding.BindingUpdater
 import groovy.util.logging.Slf4j
 import groovyx.gpars.GParsPool
 import groovyx.gpars.dataflow.Promise
@@ -18,7 +20,11 @@ class TestSpecWorld {
     static TestSpecWorld currentWorld
     static Queue<Promise> _promises = new ConcurrentLinkedDeque<Promise>()
 
+    // for web
     Binding binding
+    BindingUpdater bindingUpdater
+    Browser theBrowser
+
     SecurityManager defaultManager = System.securityManager,
                     noExitManager = new NoExitSecurityManager()
     Closure executeCodeAsync
