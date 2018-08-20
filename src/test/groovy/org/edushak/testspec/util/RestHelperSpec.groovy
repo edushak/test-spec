@@ -1,12 +1,12 @@
 package org.edushak.testspec.util
 
 import groovyx.net.http.HttpResponseDecorator
+import org.edushak.testspec.BaseSpec
 import spock.lang.Ignore
 import spock.lang.Shared
-import spock.lang.Specification
 import spock.lang.Unroll
 
-class RestHelperTest extends Specification {
+class RestHelperSpec extends BaseSpec {
 
     @Shared accessToken = '1b0ba10b11262698e2ccff05889e8e10006be798'
     @Shared requestHeaders = [
