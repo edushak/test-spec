@@ -5,9 +5,22 @@ import groovy.text.StreamingTemplateEngine
 import groovy.text.Template
 import groovy.text.TemplateEngine
 import groovy.transform.Memoized
+import groovy.util.logging.Slf4j
+import org.apache.commons.lang.NotImplementedException
 import org.codehaus.groovy.control.CompilationFailedException
+import org.supercsv.io.CsvListReader
+import org.supercsv.io.ICsvListReader
+import org.supercsv.prefs.CsvPreference
 
+@Slf4j
 class Helper {
+    static final String PROJECT_ROOT_DIR, MAIN_RESOURCES_DIR, TEST_RESOURCES_DIR
+
+    static {
+        PROJECT_ROOT_DIR = System.properties['user.dir']
+        MAIN_RESOURCES_DIR = PROJECT_ROOT_DIR + '/src/main/resources'
+        TEST_RESOURCES_DIR = PROJECT_ROOT_DIR + '/src/test/resources'
+    }
 
     static class Engines {
         public static final TemplateEngine GString = new GStringTemplateEngine()
@@ -15,7 +28,72 @@ class Helper {
     }
 
     static closureMatcher = /^(?s)\{.*\}$/,
-            closureCallMatcher = /^(?s)\{.*\}\s*.\s*call\s\(.*\).*$/
+           closureCallMatcher = /^(?s)\{.*\}\s*.\s*call\s\(.*\).*$/
+
+    static List<List> readCsvAsList(File file) { // , boolean skipFirstRow
+        List<List> dataRows = []
+        ICsvListReader listReader = null;
+        try {
+            listReader = new CsvListReader(new FileReader(file), CsvPreference.STANDARD_PREFERENCE);
+            listReader.getHeader(true); // skip the header (can't be used with CsvListReader)
+            List<Object> oneRow;
+            while ((oneRow = listReader.read()) != null) {
+                log.debug("lineNo={}, rowNo={}, oneRow={}", listReader.getLineNumber(), listReader.getRowNumber(), oneRow)
+                dataRows << oneRow
+            }
+        } finally {
+            if (listReader != null) {
+                listReader.close();
+            }
+        }
+        return dataRows
+    }
+
+    static List<List> readDelimited(File file, char delimiter, boolean skipFirstRow) {
+        CsvPreference pref = new CsvPreference.Builder((char)'"', delimiter, System.lineSeparator()).build()
+        // TODO
+        throw new NotImplementedException()
+    }
+
+    static List<List> readExcel(File file, String sheet) {
+        // TODO
+        throw new NotImplementedException()
+    }
+
+    static int replaceAll(List<List> dataRows, String searchFor, String replaceWith) {
+        int replacedValues = 0
+        dataRows.each { List cellsInRow ->
+            cellsInRow.eachWithIndex { Object value, int i ->
+                if (value == searchFor) {
+                    cellsInRow[i] = replaceWith
+                    replacedValues++
+                }
+            }
+        }
+        return replacedValues
+    }
+
+    static File resolveFile(String filePath, boolean throwWhenNotFound) {
+        File result = new File(filePath)
+        if (result.exists()) {
+            return result
+        }
+
+        result = new File("$PROJECT_ROOT_DIR/$filePath")
+        if (result.exists()) {
+            return result
+        }
+
+        result = new File("$TEST_RESOURCES_DIR/$filePath")
+        if (result.exists()) {
+            return result
+        }
+        if (throwWhenNotFound) {
+            throw new FileNotFoundException("Cannot resolve file path: $filePath")
+        } else {
+            return null
+        }
+    }
 
     static boolean isClosure(String expression) {
         if (expression instanceof CharSequence) {
