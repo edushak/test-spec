@@ -1,9 +1,9 @@
 
 Test-spec is a collection of general purpose Cucumber steps (implemented in Groovy).
-Gherkin features have dual purpose: 
+By design, Gherkin features have dual purpose: 
 * they are being a specification for some feature under development
 * they are being a set of instructions for a functional test that could be executed automatically 
-
+Test-spec focuses on second part.
 
 **What does test-spec solves?**
 
