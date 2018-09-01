@@ -27,7 +27,6 @@ dependencies {
     // compile "org.codehaus.geb:geb-core:${geb_rev}"
     // https://mvnrepository.com/artifact/org.gebish/geb-core
 */
-    compile group: 'org.gebish', name: 'geb-core', version: '2.1'
 
     compile 'info.cukes:gherkin:2.12.2'
     compile "info.cukes:cucumber-groovy:1.2.5"
@@ -35,13 +34,16 @@ dependencies {
     // compile "info.cukes:cucumber-core:${cucumber_rev}"
     // compile "info.cukes:cucumber-junit:${cucumber_rev}"
 
+    compile group: 'org.gebish', name: 'geb-core', version: '2.1'
+
     // https://mvnrepository.com/artifact/org.codehaus.groovy.modules.http-builder/http-builder
     compile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
 
     // compile 'org.xerial:sqlite-jdbc:3.8.11.1'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'net.sf.supercsv', name: 'super-csv', version: '2.4.0'
-
+    compile group: 'com.h2database', name: 'h2', version: '1.4.197'
+    compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.23.1'
 
     testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
 
@@ -60,10 +62,10 @@ task cucumber() {
             main = "cucumber.api.cli.Main"
             classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
             args = [
-                    '--plugin', 'pretty',
-                    '--tags', '~@wip',
-                    '--glue', 'src/main/resources/glue', // was: 'src/test/groovy/steps'
-                    'src/test/resources/features'
+                '--plugin', 'pretty',
+                '--tags', '~@wip',
+                '--glue', 'src/main/resources/glue', // was: 'src/test/groovy/steps'
+                'src/test/resources/features'
             ]
         }
     }

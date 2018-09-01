@@ -1,6 +1,7 @@
 package org.edushak.testspec
 
 import groovy.json.JsonSlurper
+import spock.lang.Ignore
 
 class MainSpec extends BaseSpec {
 
@@ -22,13 +23,13 @@ class MainSpec extends BaseSpec {
         ]
     }
 
+    @Ignore
     def "buildCucumberRows"() {
         given:
         List dataRows = [
             ['1', 'Ed', 'New York'],
             ['2', 'Leo', 'New Jersey']
         ]
-
-        Main.buildCucumberRows(dataRows, )
+        Main.buildCucumberRows(dataRows, null)
     }
 }

@@ -191,8 +191,8 @@ class TestSpecWorld {
             }
             retValue = engine.eval(code, binding)
         } catch (javax.script.ScriptException se) {
-            if (se.cause?.cause instanceof  MissingPropertyException) {
-                throw new Exception("You might be accessing a variable that has not been defined yet!", se.cause.cause)
+            if (se.cause?.cause instanceof MissingPropertyException) {
+                throw new Exception("You might be accessing a variable that has not been defined yet", se.cause.cause)
             } else {
                 throw se
             }
@@ -204,4 +204,14 @@ class TestSpecWorld {
         retValue
     }
 
+    /**
+     * Remove elements that begin with "cucumber.runtime.groovy"
+     * @param ste
+     * @return
+     */
+    /*
+    StackTraceElement sanitize(StackTraceElement ste) {
+
+    }
+    */
 }

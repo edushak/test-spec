@@ -25,7 +25,6 @@ class ElasticClient extends DynamicDispatchActor {
             host_name : '',
             host_os : ''
         ]
-        //
         /*
         addShutdownHook {
             println """
@@ -37,11 +36,13 @@ class ElasticClient extends DynamicDispatchActor {
 
     void onMessage(final Scenario scenario) {
         // TODO: finish
-/*
-        Map<String,Object> params = [:]
-        Map headers = [:]
-        def authFile = null
-        RestHelper.call(baseUrl, 'POST', params, headers, authFile)
-*/
+        /*
+        if (elasticPublishingIsEnabled) {
+            Map<String,Object> params = [:]
+            Map headers = [:]
+            def authFile = null
+            RestHelper.call(baseUrl, 'POST', params, headers, authFile)
+        }
+        */
     }
 }
