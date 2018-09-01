@@ -17,7 +17,7 @@ import org.edushak.testspec.util.Helper
 
 @Slf4j
 class Main {
-    static final List SUPPORTER_DATA_PROVIDERS = ['csv', 'excel', 'delimited'].asImmutable()
+    static final List SUPPORTED_DATA_PROVIDERS = ['csv', 'excel', 'delimited'].asImmutable()
 
     Main() {
     }
@@ -77,7 +77,7 @@ class Main {
     static List<List> loadTestCases(examplesDescJson) {
         String dataprovider = examplesDescJson.dataprovider.toLowerCase()
 
-        if (!(dataprovider in SUPPORTER_DATA_PROVIDERS)) {
+        if (!(dataprovider in SUPPORTED_DATA_PROVIDERS)) {
             throw new Exception("Unsupported dataprovider: $dataprovider")
         }
         if (!examplesDescJson.filepath) {
