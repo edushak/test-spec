@@ -1,5 +1,6 @@
 import com.sun.javafx.PlatformUtil
 import cucumber.api.groovy.Hooks
+import groovy.sql.Sql
 import org.apache.commons.lang.time.DateUtils
 import org.edushak.testspec.TestSpecWorld
 import org.edushak.testspec.util.Helper
@@ -14,7 +15,41 @@ Hooks.World {
     TestSpecWorld.currentWorld = world
 }
 
-When(~/I wait for (\d+) (milliseconds|seconds|minutes)$/) { long duration, String timeUnit ->
+Given(~/^imported files (.*)$/) { List<String> files ->
+    files.each { String fileName ->
+        File fileToImport = Helper.resolveFile(fileName, true);
+        if (fileToImport.name.endsWith('.groovy')) {
+            // a standard way to import Groovy script
+            evaluate(fileToImport)
+            /*
+            if (binding.hasVariable('databases')) {
+                def dbs = binding['databases']
+                Map dataSources = parse(dbs)
+                println dataSources.toMapString()
+            }
+            */
+
+        } else if (fileToImport.name.endsWith('.dictionary')) {
+            // custom parsing; TODO: do it via DataTable?  def dataTable = DataTable.create(raw)
+            List<String> lines = fileToImport.readLines()
+            Map variables = lines.
+                collect { it.trim() }.
+                grep { !(it.startsWith('#') || it == '') }.
+                collect { it.tokenize('|') }.
+                collectEntries { [ ((String)TestSpecWorld.noQuotes(it[0].trim())) : TestSpecWorld.noQuotes(it[1].trim()) ] }
+            binding.variables.putAll(variables)
+
+        } else if (fileToImport.name.endsWith('.properties')) {
+            Properties variables = Helper.loadProperties(fileToImport)
+            binding.variables.putAll(variables)
+
+        } else {
+            throw new Exception("Unsupported file type for import: $fileToImport")
+        }
+    }
+}
+
+When(~/^I wait for (\d+) (milliseconds|seconds|minutes)$/) { long duration, String timeUnit ->
     long msDuration = TimeUnit."${timeUnit.toUpperCase()}".toMillis(duration)
     if (msDuration > DateUtils.MILLIS_PER_HOUR) {
         throw new Exception("Waiting duration should not exceed 60 min")
@@ -34,9 +69,11 @@ When(~/^I execute command: (.*)$/) { String command -> // ( asynchronously)?   S
     commandResults = executeCommand(command) // , async
     binding.setVariable('_lastCommandResult', commandResults)
 }
+
 Then(~/^last command exit code should be (\d+)$/) { int expectedExitCode ->
     assert commandResults.exitCode == expectedExitCode
 }
+
 Then(~/^last command (STDOUT|STDERR) should (be|contain|match) (.*)$/) { String outOrErr, String operator, String expectedValue ->
     expectedValue = noQuotes(expectedValue)
     if (operator == 'be') {
@@ -47,7 +84,9 @@ Then(~/^last command (STDOUT|STDERR) should (be|contain|match) (.*)$/) { String 
         assert commandResults?."$outOrErr" ==~ expectedValue
     }
 }
-Map executeCommand(String command, async = null) {
+
+
+Map executeCommand(String command, boolean async = null) {
     List commandForOs = getOsPrefix() + command
     def builder = new ProcessBuilder(commandForOs)
     Process p = builder.start()
@@ -69,5 +108,11 @@ static List getOsPrefix() {
         ['cmd.exe', '/c']
     } else {
         ['sh', '-c']
+    }
+}
+
+Map parse(Map<String, Map> databases) {
+    databases.collectEntries { String dbAlias, Map<String,Object> config ->
+        [ dbAlias : Sql.newInstance(config) ]
     }
 }
