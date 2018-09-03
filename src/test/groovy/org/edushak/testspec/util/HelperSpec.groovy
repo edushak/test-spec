@@ -25,4 +25,19 @@ class HelperSpec extends BaseSpec {
         then:
         resolvedFile != null && resolvedFile.exists()
     }
+
+    def "replaceAll"() {
+        when:
+        List<List> dataRows = [ [] ]
+        int replacements = Helper.replaceAll(dataRows, "one", "two")
+        then:
+        replacements == 0
+
+        when:
+        dataRows = [ ["he","is","one"] ]
+        replacements = Helper.replaceAll(dataRows, "one", "two")
+        then:
+        replacements == 1
+        dataRows == [ ["he","is","two"] ]
+    }
 }
