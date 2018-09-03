@@ -17,7 +17,6 @@ Then(~/^page title should be (.*)$/) { String pageTitle ->
         theBrowser.waitFor {
             theBrowser.driver.title == pageTitle
         }
-        sleep(1000)
     } catch (WaitTimeoutException wte) {
         System.err.print("WaitTimeoutException: ")
         System.err.print(wte.message)
@@ -36,4 +35,25 @@ When(~/^I click on (.*)$/) { String selector ->
     selector = normalizeParameter(selector)
     Navigator element = findElement(selector)
     element.click()
+}
+
+Then(~/^web element (.*) should (have|contain) text (.*)$/) { String selector, String operator, String expectedText ->
+    selector = normalizeParameter(selector)
+    expectedText = normalizeParameter(expectedText)
+    Navigator element = findElement(selector)
+    if (operator == 'have') {
+        assert element.text() == expectedText
+    } else {
+        assert element.text().contains(expectedText)
+    }
+}
+Then(~/^web elements (.*) should (have|contain) texts (.*)$/) { String selector, String operator, List<String> expectedText ->
+    selector = normalizeParameter(selector)
+    expectedText = expectedText.collect { normalizeParameter(it) }
+    Navigator element = findElement(selector)
+    if (operator == 'have') {
+        assert element*.text() == expectedText
+    } else {
+        assert element*.text().containsAll(expectedText)
+    }
 }
