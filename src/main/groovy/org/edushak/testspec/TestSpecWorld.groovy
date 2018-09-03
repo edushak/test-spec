@@ -1,7 +1,10 @@
 package org.edushak.testspec
 
 import geb.Browser
+import geb.Configuration
 import geb.binding.BindingUpdater
+import geb.navigator.Navigator
+import geb.navigator.NonEmptyNavigator
 import groovy.util.logging.Slf4j
 import groovyx.gpars.GParsPool
 import groovyx.gpars.dataflow.Promise
@@ -21,9 +24,11 @@ class TestSpecWorld {
     static Queue<Promise> _promises = new ConcurrentLinkedDeque<Promise>()
 
     // for web
+    static Browser theBrowser
+    static Configuration configuration
+
     Binding binding
     BindingUpdater bindingUpdater
-    Browser theBrowser
 
     SecurityManager defaultManager = System.securityManager,
                     noExitManager = new NoExitSecurityManager()
@@ -47,6 +52,19 @@ class TestSpecWorld {
         if (!binding.hasVariable('_restCall')) {
             binding.setVariable('_restCall', RestHelper.&call)
         }
+    }
+
+    /**
+     * With waiting
+     * @param selector
+     * @return Navigator if found
+     */
+    Navigator findElement(String selector) {
+        Navigator element
+        theBrowser.waitFor {
+            (element = Helper.evaluate("browser.${selector}", binding, true)).with { it != null && (it instanceof NonEmptyNavigator) }
+        }
+        return element
     }
 
     boolean isVar(String str) {
