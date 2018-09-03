@@ -15,20 +15,12 @@ import org.supercsv.prefs.CsvPreference
 @Slf4j
 class Helper {
     static final String PROJECT_ROOT_DIR, MAIN_RESOURCES_DIR, TEST_RESOURCES_DIR
-
-    static Properties loadProperties(File file) {
-        if (file == null) {
-            return null
-        }
-        Properties props = new Properties()
-        props.load(file.newDataInputStream())
-        props
-    }
-
+    static final Properties SYSTEM_PROPERTIES
     static {
         PROJECT_ROOT_DIR = System.properties['user.dir']
         MAIN_RESOURCES_DIR = PROJECT_ROOT_DIR + '/src/main/resources'
         TEST_RESOURCES_DIR = PROJECT_ROOT_DIR + '/src/test/resources'
+        SYSTEM_PROPERTIES = System.properties
     }
 
     static class Engines {
@@ -38,6 +30,15 @@ class Helper {
 
     static closureMatcher = /^(?s)\{.*\}$/,
            closureCallMatcher = /^(?s)\{.*\}\s*.\s*call\s\(.*\).*$/
+
+    static Properties loadProperties(File file) {
+        if (file == null) {
+            return null
+        }
+        Properties props = new Properties()
+        props.load(file.newDataInputStream())
+        props
+    }
 
     static List<List> readCsvAsList(File file) { // , boolean skipFirstRow
         List<List> dataRows = []
