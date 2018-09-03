@@ -1,13 +1,17 @@
 import cucumber.runtime.ScenarioImpl
 import cucumber.runtime.model.CucumberFeature
 import cucumber.runtime.model.CucumberTagStatement
-
+import geb.Browser
+import geb.ConfigurationLoader
+import geb.binding.BindingUpdater
+import geb.driver.DriverCreationException
 import gherkin.formatter.PrettyFormatter
 import gherkin.formatter.model.Background
 import gherkin.formatter.model.Result
 import gherkin.formatter.model.TagStatement
 import org.edushak.testspec.Scenario
 import org.edushak.testspec.util.ElasticClient
+import org.edushak.testspec.util.Helper
 
 import static cucumber.api.groovy.Hooks.Before
 import static cucumber.api.groovy.Hooks.After
@@ -17,27 +21,32 @@ long scenarioEndTime, scenarioStartTime
 Before() { ScenarioImpl scenario ->
     scenarioStartTime = System.currentTimeMillis()
 
-/*
-    // if (user asks for it, load browser)
-    String configFilePath = 'GebConfig.groovy' // rename
-    configuration = new ConfigurationLoader().getConf(configFilePath)
-    theBrowser = new Browser(configuration)
-
-    try {
-        binding.variables.putAll(configuration.rawConfig)
-        bindingUpdater = new BindingUpdater(binding, theBrowser)
-        bindingUpdater.initialize()
-    } catch (DriverCreationException dce) {
-        // incompatibility between driver and browser
-    } catch (IllegalStateException ise) {
-        // driver cannot be found ?
+    def environment = Helper.SYSTEM_PROPERTIES['geb.env']
+    // boolean isWebEnabled = (environment != null)
+    if (environment != null) {
+        if (theBrowser == null) {
+            // org.edushak.testspec.TestSpecWorld.currentWorld.binding
+            // if (user asks for it, load browser)
+            String configFilePath = 'BrowserConfig.groovy' // rename
+            configuration = new ConfigurationLoader(environment).getConf(configFilePath)
+            theBrowser = new Browser(configuration)
+            try {
+                binding.variables.putAll(configuration.rawConfig)
+                bindingUpdater = new BindingUpdater(binding, theBrowser)
+                bindingUpdater.initialize()
+            } catch (DriverCreationException dce) {
+                dce.printStackTrace()
+                // incompatibility between driver and browser
+            } catch (IllegalStateException ise) {
+                ise.printStackTrace()
+                // driver cannot be found ?
+            }
+            // TODO: grab browser name & version and send to ElasticClient
+        }
+        if (!binding.hasVariable('browser')) {
+            binding.variables.putAll(theBrowser.getOwner().properties)
+        }
     }
-
-    if (loadingFirstTime) {
-        // grab browser name & version and set to ElasticClient
-        // etc
-    }
-*/
 }
 
 After() { ScenarioImpl scenario ->
@@ -45,8 +54,8 @@ After() { ScenarioImpl scenario ->
     long scenarioDuration = scenarioEndTime - scenarioStartTime
     bindingUpdater?.remove()
 
+    /*
     List tags = scenario.sourceTagNames.collect { it.toLowerCase() }
-
     Result failedResult = scenario.stepResults.find { it.status == 'failed' }
     if (failedResult) {
         // String featureLine = failedResult.error.stackTrace.last()
@@ -54,6 +63,7 @@ After() { ScenarioImpl scenario ->
     }
 
     publishToElastic(scenario, scenarioDuration)
+    */
 }
 
 def publishToElastic(ScenarioImpl scenario, long scenarioDuration) {
