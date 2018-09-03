@@ -8,6 +8,10 @@ By design, Gherkin features have dual purpose:
 Test-spec focuses on improving the second part.
 
 
+**Run examples**
+gradle testspec -Dgeb.env=chrome
+
+
 **What does test-spec solves?**
 
 Traditionally, in large organizations software had been tested manually by a dedicated QA team.
