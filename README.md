@@ -13,9 +13,9 @@ Test-spec focuses on improving the second part.
 gradle testspec -Dgeb.env=chrome
 
 
-**What does test-spec solves?**
+**What does test-spec solve?**
 
-Traditionally, in large organizations software had been tested manually by a dedicated QA team.
+Traditionally, in large organizations software had been tested manually by dedicated QA teams.
 While it has some merits, this approach suffers from serious limitations, 
 main one is being - inability to speed up testing phase after a certain point. 
 As application grows larger, it requires more time to perform manual testing on every release cycle.
@@ -24,18 +24,17 @@ To keep the quality of the product up, regression testing is required before eac
 One obvious solution to this situation is to hire more manual QA testers.
 Beside the fact that it's expensive, after the team grows to a certain point, 
 you'll start seeing diminishing returns on each added QA team member.
-Even if you hire more QA, large application still take considerable amount of time to test,
-which prolongs your release cycles. 
+Even with more QAs hired, large applications still take considerable amount of time to test,
+which prolongs release cycles. 
 
-Another solution is to automate functional testing.
+Another solution to this problem is automation of functional testing.
 Here comes the dilemma though: test automation _is_ software development.
 But your manual QA testers - as a rule - are not.  
-Teams that came to conclusion to automate, implement it differently: 
+Teams that came to decision to automate, implement it differently:
 * some try to train QAs to become programmers
 * others hire programmers to do automation
 
-Test-spec enabled QAs to automate functional test scenarios _without becoming "full-blown" programmers_.
-Of course it can also be used by developers, as it simply saves time that developers would spend on coding test scenarios.  
+This is where Test-spec can help. Test-spec enabled QAs to automate functional test scenarios _without becoming "full-blown" programmers_. Of course it can also be used by developers, as it simply saves time that developers would spend otherwise on implementing Cucumber glue code.
 
 
 **Functionality**
