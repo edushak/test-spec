@@ -61,10 +61,11 @@ task testspec() {
             classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
             systemProperties System.getProperties()
             args = [
-                '--plugin', 'pretty',
-                '--tags', '~@wip',
-                '--glue', 'src/main/resources/glue', // was: 'src/test/groovy/steps'
-                'src/test/resources/features'
+                    '--plugin', 'pretty',
+                    '--tags', '~@wip',
+                    //'--tags', '~@Windows-only',
+                    '--glue', 'src/main/resources/glue', // was: 'src/test/groovy/steps'
+                    'src/test/resources/features/Command.feature'
             ]
         }
     }

@@ -41,10 +41,20 @@ class Helper {
     }
 
     static List<List> readCsvAsList(File file) { // , boolean skipFirstRow
+        CsvPreference pref = CsvPreference.STANDARD_PREFERENCE
+        return readDelimited(file, pref)
+    }
+
+    static List<List> readDelimited(File file, int delimiter) { // , boolean skipFirstRow
+        CsvPreference pref = new CsvPreference.Builder((char)'"', delimiter, System.lineSeparator()).build()
+        return readDelimited(file, pref)
+    }
+
+    static ArrayList<List> readDelimited(File file, CsvPreference pref) {
         List<List> dataRows = []
         ICsvListReader listReader = null;
         try {
-            listReader = new CsvListReader(new FileReader(file), CsvPreference.STANDARD_PREFERENCE);
+            listReader = new CsvListReader(new FileReader(file), pref);
             listReader.getHeader(true); // skip the header (can't be used with CsvListReader)
             List<Object> oneRow;
             while ((oneRow = listReader.read()) != null) {
@@ -57,12 +67,6 @@ class Helper {
             }
         }
         return dataRows
-    }
-
-    static List<List> readDelimited(File file, char delimiter, boolean skipFirstRow) {
-        CsvPreference pref = new CsvPreference.Builder((char)'"', delimiter, System.lineSeparator()).build()
-        // TODO
-        throw new NotImplementedException()
     }
 
     static List<List> readExcel(File file, String sheet) {

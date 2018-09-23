@@ -29,6 +29,8 @@ Feature: DATABASE steps usage examples
       [ID: 1, NAME: 'one'],
       [ID: 2, NAME: 'two']
     ]
+
+    assert my_dataset[0]['ID'] == 1
     """
 
   # TODO: implement
