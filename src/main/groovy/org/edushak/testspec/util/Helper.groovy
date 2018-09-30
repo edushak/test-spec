@@ -96,9 +96,9 @@ class  Helper {
             }
 
         } catch (NotOLE2FileException e) {
-            throw new IllegalArgumentException("It looks like you are attempting to read a non-Excel file")
+            throw new IllegalArgumentException("It looks like you are attempting to read a non-Excel file; cause: " + e.message)
         } catch (FileNotFoundException e2) {
-            throw new FileNotFoundException("Must be valid file")
+            throw new FileNotFoundException("Must be valid file: " + e2.message)
         } finally {
             workbook?.close()
         }
