@@ -42,6 +42,8 @@ dependencies {
     compile group: 'net.sf.supercsv', name: 'super-csv', version: '2.4.0'
     compile group: 'com.h2database', name: 'h2', version: '1.4.197'
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.23.1'
+    compile "org.apache.poi:poi:3.17"
+    compile "org.apache.poi:poi-ooxml:3.17"
 
     testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
 
