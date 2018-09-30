@@ -6,21 +6,22 @@ import groovy.text.Template
 import groovy.text.TemplateEngine
 import groovy.transform.Memoized
 import groovy.util.logging.Slf4j
-import org.apache.commons.lang.NotImplementedException
+import org.apache.poi.poifs.filesystem.NotOLE2FileException
+import org.apache.poi.ss.usermodel.*
 import org.codehaus.groovy.control.CompilationFailedException
 import org.supercsv.io.CsvListReader
 import org.supercsv.io.ICsvListReader
 import org.supercsv.prefs.CsvPreference
 
 @Slf4j
-class Helper {
+class  Helper {
     static final String PROJECT_ROOT_DIR, MAIN_RESOURCES_DIR, TEST_RESOURCES_DIR
     static final Properties SYSTEM_PROPERTIES
     static {
-        PROJECT_ROOT_DIR = System.properties['user.dir']
+        SYSTEM_PROPERTIES = System.getProperties()
+        PROJECT_ROOT_DIR = SYSTEM_PROPERTIES['user.dir']
         MAIN_RESOURCES_DIR = PROJECT_ROOT_DIR + '/src/main/resources'
         TEST_RESOURCES_DIR = PROJECT_ROOT_DIR + '/src/test/resources'
-        SYSTEM_PROPERTIES = System.properties
     }
 
     static class Engines {
@@ -54,7 +55,7 @@ class Helper {
         List<List> dataRows = []
         ICsvListReader listReader = null;
         try {
-            listReader = new CsvListReader(new FileReader(file), pref);
+            listReader = new CsvListReader(new FileReader(file), pref)
             listReader.getHeader(true); // skip the header (can't be used with CsvListReader)
             List<Object> oneRow;
             while ((oneRow = listReader.read()) != null) {
@@ -62,16 +63,46 @@ class Helper {
                 dataRows << oneRow
             }
         } finally {
-            if (listReader != null) {
-                listReader.close();
-            }
+            listReader?.close()
         }
         return dataRows
     }
 
-    static List<List> readExcel(File file, String sheet) {
-        // TODO
-        throw new NotImplementedException()
+    static List<List> readExcel(File file, String sheetName) {
+        if (file == null) {
+            throw new IllegalArgumentException("Excel file parameter may not be null")
+        }
+        if (sheetName == null) {
+            throw new IllegalArgumentException("Excel sheetName parameter may not be null")
+        }
+        List<List> dataSheet = []
+        Workbook workbook = null
+        try {
+            workbook = WorkbookFactory.create(file)
+            int index = workbook.getSheetIndex(sheetName)
+            if (index < 0) {
+                throw new IllegalArgumentException("Non-existent Excel sheetName name: $sheetName")
+            }
+            Sheet sheet2 = workbook.getSheet(sheetName)
+            println "sheet2: $sheet2"
+
+            for (Row row : sheet2) {
+                List<String> rowVal = []
+                for (Cell cell : row) {
+                    String cellValue = cell.getStringCellValue()
+                    rowVal << cellValue
+                }
+                dataSheet << rowVal
+            }
+
+        } catch (NotOLE2FileException e) {
+            throw new IllegalArgumentException("It looks like you are attempting to read a non-Excel file")
+        } catch (FileNotFoundException e2) {
+            throw new FileNotFoundException("Must be valid file")
+        } finally {
+            workbook?.close()
+        }
+        return dataSheet
     }
 
     static int replaceAll(List<List> dataRows, String searchFor, String replaceWith) {
