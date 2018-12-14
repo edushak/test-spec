@@ -96,7 +96,7 @@ class HelperSpec extends BaseSpec {
 
         then:
         Throwable th = thrown()
-        th.message == exMessage
+        th.message.startsWith(exMessage)
         th.getClass() == exType
 
         where:
@@ -105,6 +105,6 @@ class HelperSpec extends BaseSpec {
         excelFile                 | "non-exist"| IllegalArgumentException | "Non-existent Excel sheetName name: non-exist"
         null                      | "Sheet2"   | IllegalArgumentException | "Excel file parameter may not be null"
         csvFile                   | "Sheet2"   | IllegalArgumentException | "It looks like you are attempting to read a non-Excel file"
-        new File("bla") | "Sh1"      | FileNotFoundException    | "Must be valid file"
+        new File("bla")  | "Sh1"      | FileNotFoundException    | "Must be valid file"
     }
 }
