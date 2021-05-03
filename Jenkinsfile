@@ -21,7 +21,7 @@ pipeline {
             steps {
                 sh './gradlew --stacktrace build'
                 archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
-                echo "Running ${env.BUILD_ID}
+                echo "Running ${env.BUILD_ID}"
             }
         }
     }
