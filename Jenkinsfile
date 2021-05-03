@@ -6,14 +6,21 @@ pipeline {
                 sh './gradlew --stacktrace clean'
             }
         }
-        stage('Build'){
+        stage('Check'){
             steps {
-                sh './gradlew --stacktrace build'
+                sh './gradlew --stacktrace check'
             }
         }
         stage('Test'){
             steps {
                 sh './gradlew --stacktrace test'
+                junit 'build/test-results/**/*.xml'
+            }
+        }
+        stage('Build'){
+            steps {
+                sh './gradlew --stacktrace build'
+                archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
             }
         }
     }
