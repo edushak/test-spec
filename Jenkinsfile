@@ -24,5 +24,10 @@ pipeline {
                 echo "Running ${env.BUILD_ID}"
             }
         }
+        stage('Publish Artifact'){
+            steps {
+                nexusArtifactUploader artifacts: [[artifactId: 'test-spec', classifier: '', file: 'build/libs/**/*.jar', type: 'jar']], credentialsId: 'nexuslogin', groupId: 'test-spec', nexusUrl: 'nexus-nexus-repo.bnsf-nonprod-dfw-e648741016b5b16f9b585588dcd0ed80-0000.us-south.containers.appdomain.cloud', nexusVersion: 'nexus3', protocol: 'http', repository: 'spec-test', version: '0.0.1'
+            }
+        }
     }
 }
