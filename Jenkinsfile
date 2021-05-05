@@ -27,7 +27,7 @@ pipeline {
         stage('Publish Artifact to Nexus'){
             steps {
                 nexusArtifactUploader artifacts: [
-                                        [artifactId: 'test-spec-${BUILD_ID}',
+                                        [artifactId: 'test-spec',
                                          classifier: '',
                                          file: 'build/libs/workspace-0.0.1.jar',
                                          type: 'jar']],
@@ -37,7 +37,7 @@ pipeline {
                                          nexusVersion: 'nexus3',
                                          protocol: 'http',
                                          repository: 'spec-test-release',
-                                         version: 'Version.0.0.${BUILD_ID}'
+                                         version: 'Version.1.0.${BUILD_ID}'
             }
         }
     }
