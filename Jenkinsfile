@@ -32,7 +32,7 @@ pipeline {
                                          file: 'build/libs/workspace-0.0.1.jar',
                                          type: 'jar']],
                                          credentialsId: 'nexuslogin',
-                                         groupId: 'dev',
+                                         groupId: 'DEV',
                                          nexusUrl: 'nexus-nexus-repo.bnsf-nonprod-dfw-e648741016b5b16f9b585588dcd0ed80-0000.us-south.containers.appdomain.cloud',
                                          nexusVersion: 'nexus3',
                                          protocol: 'http',
