@@ -33,7 +33,7 @@ pipeline {
                                          type: 'jar']],
                                          credentialsId: 'nexuslogin',
                                          groupId: 'DEV',
-                                         nexusUrl: 'nexus-nexus-repo.bnsf-nonprod-dfw-e648741016b5b16f9b585588dcd0ed80-0000.us-south.containers.appdomain.cloud',
+                                         nexusUrl: 'nexus-nexus.bnsf-dev-03-e648741016b5b16f9b585588dcd0ed80-0000.us-south.containers.appdomain.cloud',
                                          nexusVersion: 'nexus3',
                                          protocol: 'http',
                                          repository: 'spec-test-release',
