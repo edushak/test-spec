@@ -1,0 +1,56 @@
+import org.openqa.selenium.Dimension
+import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.chrome.ChromeOptions
+
+//import org.openqa.selenium.chrome.ChromeOptions
+//import org.openqa.selenium.firefox.FirefoxDriver
+
+waiting {
+    includeCauseInMessage = true
+    timeout = 5
+    retryInterval = 0.5
+    slow { timeout = 12 }
+    reallyslow { timeout = 24 }
+}
+
+baseDir = System.getProperty('user.dir')
+baseNavigatorWaiting = true
+
+// To run the tests with all browsers just run “./gradlew testspec”
+// baseUrl = "http://gebish.org"
+
+// TODO: use library that finds drivers automatically
+environments {
+    // run via “./gradlew chromeTest”
+    // See: http://code.google.com/p/selenium/wiki/ChromeDriver
+    chrome {
+        System.setProperty('webdriver.chrome.driver', "${baseDir}/bin/chromedriver.exe")
+        driver = {
+            ChromeOptions options = new ChromeOptions()
+            ChromeDriver driver = new ChromeDriver(options)
+            // Resize current window to the set dimension
+            Dimension dimension = new Dimension(1900,1080);
+            driver.manage().window().setSize(dimension);
+            driver
+        }
+    }
+
+/*
+    // run via “./gradlew chromeHeadlessTest”
+    // See: http://code.google.com/p/selenium/wiki/ChromeDriver
+    chromeHeadless {
+        driver = {
+            ChromeOptions o = new ChromeOptions()
+            o.addArguments('headless')
+            new ChromeDriver(o)
+        }
+    }
+
+    // run via “./gradlew firefoxTest”
+    // See: http://code.google.com/p/selenium/wiki/FirefoxDriver
+    firefox {
+        atCheckWaiting = 1
+        driver = { new FirefoxDriver() }
+    }
+*/
+}
