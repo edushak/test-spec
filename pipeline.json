@@ -114,7 +114,7 @@
         "strategy": {
           "type": "Docker",
           "dockerStrategy": {
-            "dockerfilePath":"Containerfile"
+            "dockerfilePath":"Dockerfile"
           }
         },
         "output": {
