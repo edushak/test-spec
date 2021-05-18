@@ -112,10 +112,7 @@
           }
         },
         "strategy": {
-          "type": "Docker",
-          "dockerStrategy": {
-            "dockerfilePath":"Dockerfile"
-          }
+          "type": "Docker"
         },
         "output": {
           "to": {
