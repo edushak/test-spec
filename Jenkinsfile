@@ -1,4 +1,4 @@
-def templatePath = 'https://raw.githubusercontent.com/hanvitha/colorpad/main/pipeline.json'
+def templatePath = 'https://raw.githubusercontent.com/rozdolsky33/test-spec/ocp_tempalte/pipeline.json
 def templateName = 'test-spec-backend'
 pipeline {
   agent {
