@@ -39,9 +39,8 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.32'
     implementation 'org.slf4j:slf4j-simple:1.7.32'
 
-    implementation "org.seleniumhq.selenium:selenium-support:${selenium_rev}"
-    implementation "org.seleniumhq.selenium:selenium-api:${selenium_rev}"
-    implementation "org.seleniumhq.selenium:selenium-chrome-driver:${selenium_rev}"
+    implementation 'org.seleniumhq.selenium:selenium-support:4.1.1'
+    implementation "org.seleniumhq.selenium:selenium-chrome-driver:4.1.1"
 
     /*
     implementation "org.seleniumhq.selenium:selenium-firefox-driver:${selenium_rev}"
