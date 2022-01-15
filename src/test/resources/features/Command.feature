@@ -1,5 +1,9 @@
 Feature: Command steps usage examples
 
+  Usage:
+    gradlew testspec -Pfeatures=src/test/resources/features/Command.feature
+
+
   Scenario: call existing script
     When I execute command: echo Test-spec can call external processes
     Then last command exit code should be 0

@@ -1,5 +1,10 @@
 Feature: CORE steps usage examples
 
+  Usage:
+    gradlew testspec -Pfeatures=src/test/resources/features/Core.feature
+    gradlew testspec -Dfeatures=features/Core.feature
+
+
   Scenario: import scripts
     Given imported files features/Core.groovy,features/variables.dictionary,features/variables.properties
     Then I execute code "to verify that Core.groovy got imported":
