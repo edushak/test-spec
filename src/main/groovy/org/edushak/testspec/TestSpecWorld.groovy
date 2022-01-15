@@ -11,7 +11,7 @@ import groovyx.gpars.dataflow.Promise
 import jsr166y.ForkJoinPool
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory
-import org.codehaus.groovy.tools.shell.util.NoExitSecurityManager
+import org.apache.groovy.groovysh.util.NoExitSecurityManager
 import org.edushak.testspec.util.Helper
 import org.edushak.testspec.util.RestHelper
 
