@@ -1,3 +1,4 @@
+package glue
 
 import geb.navigator.Navigator
 import geb.waiting.WaitTimeoutException
@@ -28,13 +29,13 @@ When(~/^I enter (.*) into (.*)$/) { String value, String selector ->
     selector = normalizeParameter(selector)
     value = normalizeParameter(value)
     Navigator element = findElement(selector)
-    element.value(value)
+    element?.value(value)
 }
 
 When(~/^I click on (.*)$/) { String selector ->
     selector = normalizeParameter(selector)
     Navigator element = findElement(selector)
-    element.click()
+    element?.click()
 }
 
 Then(~/^web element (.*) should (have|contain) text (.*)$/) { String selector, String operator, String expectedText ->
@@ -44,7 +45,7 @@ Then(~/^web element (.*) should (have|contain) text (.*)$/) { String selector, S
     if (operator == 'have') {
         assert element.text() == expectedText
     } else {
-        assert element.text().contains(expectedText)
+        assert element.text()?.contains(expectedText)
     }
 }
 Then(~/^web elements (.*) should (have|contain) texts (.*)$/) { String selector, String operator, List<String> expectedText ->
@@ -54,6 +55,12 @@ Then(~/^web elements (.*) should (have|contain) texts (.*)$/) { String selector,
     if (operator == 'have') {
         assert element*.text() == expectedText
     } else {
-        assert element*.text().containsAll(expectedText)
+        assert element*.text()?.containsAll(expectedText)
     }
+}
+
+And(~/^page should contain text: (.*)$/) { String expectedTestOnPage ->
+    // Write code here that turns the phrase above into concrete actions
+    expectedTestOnPage = noQuotes(expectedTestOnPage)
+    assert theBrowser.driver.pageSource.contains(expectedTestOnPage)
 }

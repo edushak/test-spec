@@ -1,3 +1,5 @@
+package glue
+
 import cucumber.runtime.ScenarioImpl
 import cucumber.runtime.model.CucumberFeature
 import cucumber.runtime.model.CucumberTagStatement
@@ -21,7 +23,7 @@ long scenarioEndTime, scenarioStartTime
 Before() { ScenarioImpl scenario ->
     scenarioStartTime = System.currentTimeMillis()
 
-    def environment = Helper.SYSTEM_PROPERTIES['geb.env']
+    def environment = Helper.SYSTEM_PROPERTIES['browser'] // geb.env
     // boolean isWebEnabled = (environment != null)
     if (environment != null) {
         if (theBrowser == null) {

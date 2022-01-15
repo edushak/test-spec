@@ -1,4 +1,5 @@
-import com.sun.javafx.PlatformUtil
+package glue
+
 import cucumber.api.groovy.Hooks
 import groovy.sql.Sql
 import org.apache.commons.lang.time.DateUtils
@@ -104,7 +105,7 @@ Map executeCommand(String command, boolean async = null) {
 }
 
 static List getOsPrefix() {
-    if (PlatformUtil.isWindows()) {
+    if (Helper.isWindows()) {
         ['cmd.exe', '/c']
     } else {
         ['sh', '-c']

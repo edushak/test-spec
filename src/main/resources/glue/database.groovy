@@ -1,3 +1,4 @@
+package glue
 
 import groovy.sql.Sql
 
