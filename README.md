@@ -2,7 +2,6 @@
 
 * Add HTML report
 * Upgrade to the newest Cucumber 6.10.4
-* Upgrade to Selenium 4
 * Open HTML report automatically from within the framework
 * download drivers on a fly into bin/
 
