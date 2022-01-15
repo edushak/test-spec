@@ -1,3 +1,27 @@
+// https://docs.gradle.org/current/userguide/logging.html
+
+/*
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.7"
+    }
+}
+apply plugin: "com.github.erdi.webdriver-binaries"
+
+webdriverBinaries {
+    chromedriver {
+        downloadRoot = new File(projectDir, "bin")
+        version = '97'
+        // versionRegexp = '.*'
+    }
+}
+*/
+
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
@@ -9,70 +33,97 @@ group 'test-spec'
 version '0.0.1'
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.15'
-    compile 'org.codehaus.gpars:gpars:1.2.1'
+    implementation 'org.codehaus.groovy:groovy-all:3.0.9'
+    implementation 'org.codehaus.gpars:gpars:1.2.1'
 
-    compile 'org.slf4j:slf4j-api:1.7.25'
-    compile 'org.slf4j:slf4j-simple:1.7.25'
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'org.slf4j:slf4j-simple:1.7.32'
 
-    compile "org.seleniumhq.selenium:selenium-support:${selenium_rev}"
-    compile "org.seleniumhq.selenium:selenium-api:${selenium_rev}"
-    compile "org.seleniumhq.selenium:selenium-chrome-driver:${selenium_rev}"
+    implementation "org.seleniumhq.selenium:selenium-support:${selenium_rev}"
+    implementation "org.seleniumhq.selenium:selenium-api:${selenium_rev}"
+    implementation "org.seleniumhq.selenium:selenium-chrome-driver:${selenium_rev}"
 
     /*
-    compile "org.seleniumhq.selenium:selenium-firefox-driver:${selenium_rev}"
-    compile "org.seleniumhq.selenium:selenium-ie-driver:${selenium_rev}"
-    compile "org.seleniumhq.selenium:selenium-remote-driver:${selenium_rev}"
-    compile "org.seleniumhq.selenium:selenium-server:${selenium_rev}"
+    implementation "org.seleniumhq.selenium:selenium-firefox-driver:${selenium_rev}"
+    implementation "org.seleniumhq.selenium:selenium-ie-driver:${selenium_rev}"
+    implementation "org.seleniumhq.selenium:selenium-remote-driver:${selenium_rev}"
+    implementation "org.seleniumhq.selenium:selenium-server:${selenium_rev}"
     */
 
-    compile 'info.cukes:gherkin:2.12.2'
-    compile "info.cukes:cucumber-groovy:1.2.5"
-    // compile "info.cukes:cucumber-java:${cucumber_rev}"
-    // compile "info.cukes:cucumber-core:${cucumber_rev}"
-    // compile "info.cukes:cucumber-junit:${cucumber_rev}"
+    // TODO: upgrade
+    // https://mvnrepository.com/artifact/io.cucumber/cucumber-groovy
+    // implementation group: 'io.cucumber', name: 'cucumber-groovy', version: '6.10.4'
 
-    compile group: 'org.gebish', name: 'geb-core', version: '2.1'
+    implementation 'info.cukes:gherkin:2.12.2'
+    implementation 'info.cukes:cucumber-groovy:1.2.6'
 
+    // implementation "info.cukes:cucumber-java:${cucumber_rev}"
+    // implementation "info.cukes:cucumber-core:${cucumber_rev}"
+    // implementation "info.cukes:cucumber-junit:${cucumber_rev}"
+
+    implementation group: 'org.gebish', name: 'geb-core', version: '2.3.1'
+
+    // TODO: replace with Apache client
     // https://mvnrepository.com/artifact/org.codehaus.groovy.modules.http-builder/http-builder
-    compile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
+    implementation group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
 
-    // compile 'org.xerial:sqlite-jdbc:3.8.11.1'
-    compile group: 'commons-io', name: 'commons-io', version: '2.6'
-    compile group: 'net.sf.supercsv', name: 'super-csv', version: '2.4.0'
-    compile group: 'com.h2database', name: 'h2', version: '1.4.197'
-    compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.23.1'
-    compile "org.apache.poi:poi:3.17"
-    compile "org.apache.poi:poi-ooxml:3.17"
+    // TODO: choose one
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+    implementation group: 'net.sf.supercsv', name: 'super-csv', version: '2.4.0'
 
-    testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+    implementation group: 'com.h2database', name: 'h2', version: '2.0.206'
+    implementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.36.0.2'
 
-    // testCompile group: 'org.testng', name: 'testng', version: '6.11'
-    // testCompile group: 'junit', name: 'junit', version: '4.11'
+    implementation 'org.apache.poi:poi:5.0.0'
+    implementation 'org.apache.poi:poi-ooxml:5.0.0'
+
+    // test libs
+    testImplementation "org.spockframework:spock-core:2.0-groovy-3.0"
 }
 
 configurations {
-    cucumberRuntime { extendsFrom testRuntime }
+    cucumberRuntime { extendsFrom testImplementation }
 }
 
 task testspec() {
     dependsOn testClasses
+    group = "TestSpec"
+
+    ext {
+        featuresParam = ''
+    }
     doLast {
+        // logger.debug("Inside task testspec()");
+
+        if (project.hasProperty('features')) {
+            featuresParam = project['features']
+        } else if (System.getProperty('features')) {
+            featuresParam = System.getProperty('features')
+        } else {
+            throw new RuntimeException("Missing mandatory parameter -Pfeatures=... !")
+        }
+        if (!((String)featuresParam).startsWith('src/test/resources')) {
+            featuresParam = 'src/test/resources/' + featuresParam
+        }
+        // TODO: tags
+        // TODO: plugins
+
         javaexec {
             main = "org.edushak.testspec.Main"
             classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
-            systemProperties System.getProperties()
+            systemProperties System.getProperties() // pass all -D variables passed by user to a framework
             args = [
-                    '--plugin', 'pretty',
-                    '--tags', '~@wip',
-                    //'--tags', '~@Windows-only',
-                    '--glue', 'src/main/resources/glue', // was: 'src/test/groovy/steps'
-                    'src/test/resources/features/Command.feature'
+                '--plugin', 'pretty',
+                '--tags', '~@wip',
+                //'--tags', '~@Windows-only',
+                '--glue', 'src/main/resources/glue', // TODO: add inside framework
+                featuresParam
             ]
         }
     }
 }
 
+/*
 task startSeleniumHub() << {
     ant.java(classname : 'org.openqa.grid.selenium.GridLauncher',
             fork:true,
@@ -94,3 +145,4 @@ task startSeleniumNode() << {
         arg(value : "-Dwebdriver.firefox.bin=${webdriver_firefox_bin}")
     }
 }
+*/
