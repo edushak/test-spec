@@ -243,6 +243,10 @@ class  Helper {
         getTemplate(templateSource as String, engine)?.make(tokens)
     }
 
+    static boolean isWindows() {
+        SYSTEM_PROPERTIES.getProperty("os.name")?.toLowerCase()?.contains('win')
+    }
+
     @Memoized
     static Template getTemplate(String templateStr, TemplateEngine engine) {
         if (templateStr == null) {
