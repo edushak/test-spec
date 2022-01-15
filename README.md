@@ -17,8 +17,13 @@ Test-spec focuses on improving the second part.
 
 
 **Run examples**
-
-gradle testspec -Dbrowser=chrome
+```
+  gradlew testspec -Pfeatures=features/Command.feature
+  gradlew testspec -Dfeatures=features/Core.feature
+  gradlew testspec -Dfeatures=features/Database.feature
+  gradlew testspec -Dfeatures=features/Rest.feature
+  gradlew testspec -Dfeatures=features/WebSearch.feature -Dbrowser=chrome
+```
 
 
 **What does test-spec solve?**

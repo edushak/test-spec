@@ -1,7 +1,7 @@
 Feature: Command steps usage examples
 
   Usage:
-    gradlew testspec -Pfeatures=src/test/resources/features/Command.feature
+    gradlew testspec -Pfeatures=features/Command.feature
 
 
   Scenario: call existing script

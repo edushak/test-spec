@@ -64,3 +64,9 @@ And(~/^page should contain text: (.*)$/) { String expectedTestOnPage ->
     expectedTestOnPage = noQuotes(expectedTestOnPage)
     assert theBrowser.driver.pageSource.contains(expectedTestOnPage)
 }
+
+When(~/^I capture text of an element (.*) into (.*)$/) { String selector, String captureIntoVariableName ->
+    selector = normalizeParameter(selector)
+    Navigator element = findElement(selector)
+    binding[captureIntoVariableName] = element.text()
+}

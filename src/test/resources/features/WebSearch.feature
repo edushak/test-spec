@@ -1,7 +1,10 @@
 Feature: Web search
 
+  Pre-requisite:
+    User must have bin/chromedriver.exe present in project structure.
+
   Usage:
-    gradlew testspec -Dfeatures=features/WebSearch.feature -Dbrowser=phantomjs
+    gradlew testspec -Dfeatures=features/WebSearch.feature -Dbrowser=chrome
 
 
   Scenario: Google search using raw selectors
@@ -26,3 +29,11 @@ Feature: Web search
     Then page title should be "Maven h2 - Google Search"
      And page should contain text: 'Build - H2 Database Engine'
      # And web elements 'Google results titles' should contain texts 'Maven Repository: com.h2database » h2','Build - H2 Database Engine'
+
+
+  Scenario: Capture text from page
+    When I capture text of an element $('div[id="result-stats"]') into ResultStats
+    Then I execute code "to verify the step above":
+    """
+    assert ResultStats != null
+    """

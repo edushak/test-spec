@@ -181,7 +181,7 @@ class TestSpecWorld {
         binding.__engines[lang]
     }
 
-    Closure executeCodeFacade = { String async, String code ->
+    Closure executeCodeFacade = { def async, String code ->
         Binding _binding = new Binding(binding.variables)
         if (async) {
             GParsPool.withExistingPool(pool) {

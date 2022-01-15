@@ -58,8 +58,8 @@ When(~/^I wait for (\d+) (milliseconds|seconds|minutes)$/) { long duration, Stri
     sleep(msDuration)
 }
 
-When(~/^I execute code "([^"]*)"( asynchronously)?:$/) { String descr, String async, String code ->
-    executeCodeFacade(async, code)
+When(~/^I execute code "([^"]*)":$/) { String descr, String code ->
+    executeCodeFacade(false, code)
 }
 
 When(~/^I execute command: (.*)$/) { String command -> // ( asynchronously)?   String async,
