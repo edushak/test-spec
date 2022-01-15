@@ -11,7 +11,7 @@ import groovyx.gpars.dataflow.Promise
 import jsr166y.ForkJoinPool
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory
-import org.codehaus.groovy.tools.shell.util.NoExitSecurityManager
+import org.apache.groovy.groovysh.util.NoExitSecurityManager
 import org.edushak.testspec.util.Helper
 import org.edushak.testspec.util.RestHelper
 
@@ -181,7 +181,7 @@ class TestSpecWorld {
         binding.__engines[lang]
     }
 
-    Closure executeCodeFacade = { String async, String code ->
+    Closure executeCodeFacade = { def async, String code ->
         Binding _binding = new Binding(binding.variables)
         if (async) {
             GParsPool.withExistingPool(pool) {

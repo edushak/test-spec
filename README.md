@@ -1,3 +1,11 @@
+**TODO**
+
+* Add HTML report
+* Upgrade to the newest Cucumber 6.10.4
+* Upgrade to Selenium 4
+* Open HTML report automatically from within the framework
+* download drivers on a fly into bin/
+
 
 Test-spec is a collection of general purpose Cucumber steps (implemented in Groovy).
 
@@ -9,8 +17,13 @@ Test-spec focuses on improving the second part.
 
 
 **Run examples**
-
-gradle testspec -Dgeb.env=chrome
+```
+  gradlew testspec -Pfeatures=features/Command.feature
+  gradlew testspec -Dfeatures=features/Core.feature
+  gradlew testspec -Dfeatures=features/Database.feature
+  gradlew testspec -Dfeatures=features/Rest.feature
+  gradlew testspec -Dfeatures=features/WebSearch.feature -Dbrowser=chrome
+```
 
 
 **What does test-spec solve?**

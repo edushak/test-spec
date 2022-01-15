@@ -1,5 +1,9 @@
 Feature: REST steps usage examples
 
+  Usage:
+    gradlew testspec -Dfeatures=features/Rest.feature
+
+
   Scenario: setup
     Given I execute code "to set user dynamically":
     """

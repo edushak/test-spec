@@ -1,5 +1,8 @@
 Feature: DATABASE steps usage examples
 
+  Usage:
+    gradlew testspec -Dfeatures=features/Database.feature
+
   Scenario: first
     Given imported files features/Database.groovy
 

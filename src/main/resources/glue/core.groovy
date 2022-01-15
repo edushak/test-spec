@@ -1,4 +1,5 @@
-import com.sun.javafx.PlatformUtil
+package glue
+
 import cucumber.api.groovy.Hooks
 import groovy.sql.Sql
 import org.apache.commons.lang.time.DateUtils
@@ -57,8 +58,8 @@ When(~/^I wait for (\d+) (milliseconds|seconds|minutes)$/) { long duration, Stri
     sleep(msDuration)
 }
 
-When(~/^I execute code "([^"]*)"( asynchronously)?:$/) { String descr, String async, String code ->
-    executeCodeFacade(async, code)
+When(~/^I execute code "([^"]*)":$/) { String descr, String code ->
+    executeCodeFacade(false, code)
 }
 
 When(~/^I execute command: (.*)$/) { String command -> // ( asynchronously)?   String async,
@@ -104,7 +105,7 @@ Map executeCommand(String command, boolean async = null) {
 }
 
 static List getOsPrefix() {
-    if (PlatformUtil.isWindows()) {
+    if (Helper.isWindows()) {
         ['cmd.exe', '/c']
     } else {
         ['sh', '-c']

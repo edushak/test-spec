@@ -1,3 +1,5 @@
+package glue
+
 import org.edushak.testspec.util.Helper
 import org.edushak.testspec.util.RestHelper
 
