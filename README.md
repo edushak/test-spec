@@ -1,3 +1,9 @@
+**TODO**
+
+  * Upgrade to the newest Cucumber 6.10.4
+  * Add HTML report
+  * Open HTML report automatically from within the framework
+
 
 Test-spec is a collection of general purpose Cucumber steps (implemented in Groovy).
 
