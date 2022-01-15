@@ -23,7 +23,7 @@ long scenarioEndTime, scenarioStartTime
 Before() { ScenarioImpl scenario ->
     scenarioStartTime = System.currentTimeMillis()
 
-    def environment = Helper.SYSTEM_PROPERTIES['browser'] // geb.env
+    def environment = Helper.SYSTEM_PROPERTIES['browser']
     // boolean isWebEnabled = (environment != null)
     if (environment != null) {
         if (theBrowser == null) {

@@ -18,7 +18,7 @@ Test-spec focuses on improving the second part.
 
 **Run examples**
 
-gradle testspec -Dgeb.env=chrome
+gradle testspec -Dbrowser=chrome
 
 
 **What does test-spec solve?**
