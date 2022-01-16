@@ -44,3 +44,7 @@ jobs:
 
       # run tests!
       - run: gradle test
+
+      # Upload test results - path: should be path under "working_directory", like build/, that's where SPock saves xml
+      - store_test_results:
+          path: ~/repo/build/test-results/test
