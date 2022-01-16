@@ -47,5 +47,5 @@ jobs:
 
       # Upload test results
       - store_test_results:
-          path: build/reports/specs
+          path: test-results
           #/tmp/test-reports
