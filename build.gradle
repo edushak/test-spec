@@ -33,7 +33,7 @@ repositories {
 }
 
 group 'test-spec'
-version '0.0.1'
+version '0.0.2'
 
 dependencies {
     implementation 'org.codehaus.groovy:groovy-all:3.0.9'
@@ -59,13 +59,13 @@ dependencies {
     // https://mvnrepository.com/artifact/org.codehaus.groovy.modules.http-builder/http-builder
     implementation group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
 
-    // TODO: choose one
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
     implementation group: 'net.sf.supercsv', name: 'super-csv', version: '2.4.0'
 
     implementation group: 'com.h2database', name: 'h2', version: '2.0.206'
     implementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.36.0.2'
 
+    // for reading Excel; TODO: remove, leave only CSV
     implementation 'org.apache.poi:poi:5.0.0'
     implementation 'org.apache.poi:poi-ooxml:5.0.0'
 
