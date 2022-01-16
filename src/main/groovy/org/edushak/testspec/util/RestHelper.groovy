@@ -12,7 +12,7 @@ import javax.net.ssl.SSLException
 
 class RestHelper {
 
-    static HttpResponseDecorator call(String endpoint, String method, Map<String,Object> params, Map headers, authFile = null) {
+    static HttpResponseDecorator call(String endpoint, String method, Map<String,Object> params, Map headers, String authFile = null) {
         RESTClient client = new RESTClient(endpoint)
         if (headers != null && !headers.isEmpty()) {
             client.headers.putAll(headers)
@@ -79,16 +79,16 @@ class RestHelper {
         response
     }
 
-    static def setCertificates(RESTClient client, def authFileOrPath) {
+    static def setCertificates(RESTClient client, String authFileOrPath) {
         if (authFileOrPath) {
-            File authFile = new File() // TODO
+            File authFile = Helper.resolveFile(authFileOrPath)
             if (authFile.exists()) {
                 ConfigObject authConfig = Helper.loadConfig(authFile.absolutePath)
                 Object jks = authConfig.jks
                 if (authConfig.jks) {
                     // could be relative paths
-                    File keyStoreFile = Helper.getProjectFile(jks.keyStoreFile)
-                    File trustStoreFile = Helper.getProjectFile(jks.trustStoreFile)
+                    File keyStoreFile = Helper.resolveFile(jks.keyStoreFile)
+                    File trustStoreFile = Helper.resolveFile(jks.trustStoreFile)
 
                     System.setProperty('javax.net.ssl.trustStore', Helper.getProjectFile(trustStoreFile.toString()))
                     System.setProperty('javax.net.ssl.trustPassword', jks.truststorePassword)
