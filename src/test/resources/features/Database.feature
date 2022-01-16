@@ -4,7 +4,7 @@ Feature: DATABASE steps usage examples
     gradlew testspec -Dfeatures=features/Database.feature
 
   Scenario: first
-    Given imported files features/Database.groovy
+    Given I import files features/Database.groovy
 
     # IF NOT EXISTS
     When I execute statements on database h2:

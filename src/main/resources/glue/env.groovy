@@ -1,36 +1,47 @@
 package glue
 
-import cucumber.runtime.ScenarioImpl
-import cucumber.runtime.model.CucumberFeature
-import cucumber.runtime.model.CucumberTagStatement
 import geb.Browser
 import geb.ConfigurationLoader
 import geb.binding.BindingUpdater
 import geb.driver.DriverCreationException
-import gherkin.formatter.PrettyFormatter
-import gherkin.formatter.model.Background
-import gherkin.formatter.model.Result
-import gherkin.formatter.model.TagStatement
-import org.edushak.testspec.Scenario
-import org.edushak.testspec.util.ElasticClient
+import io.cucumber.groovy.Scenario
+import org.edushak.testspec.TestSpecWorld
 import org.edushak.testspec.util.Helper
 
-import static cucumber.api.groovy.Hooks.Before
-import static cucumber.api.groovy.Hooks.After
+import static io.cucumber.groovy.Hooks.Before
+import static io.cucumber.groovy.Hooks.After
+
+//import cucumber.runtime.ScenarioImpl
+//import cucumber.runtime.model.CucumberFeature
+//import cucumber.runtime.model.CucumberTagStatement
+//import gherkin.formatter.PrettyFormatter
+//import gherkin.formatter.model.Background
+//import gherkin.formatter.model.Result
+//import gherkin.formatter.model.TagStatement
+//import io.cucumber.core.plugin.PrettyFormatter
+//import io.cucumber.messages.Messages
+//import org.edushak.testspec.Scenario
+//import org.edushak.testspec.util.ElasticClient
 
 long scenarioEndTime, scenarioStartTime
 
-Before() { ScenarioImpl scenario ->
+Before() { Scenario scenario ->
+    TestSpecWorld.log.debug("Inside Before() hook")
     scenarioStartTime = System.currentTimeMillis()
 
-    def environment = Helper.SYSTEM_PROPERTIES['browser']
+    String environment = Helper.SYSTEM_PROPERTIES['browser']
+    TestSpecWorld.log.debug("environment = '{}'", environment)
+
     // boolean isWebEnabled = (environment != null)
     if (environment != null) {
         if (theBrowser == null) {
             // org.edushak.testspec.TestSpecWorld.currentWorld.binding
             // if (user asks for it, load browser)
-            String configFilePath = 'BrowserConfig.groovy' // rename
-            configuration = new ConfigurationLoader(environment).getConf(configFilePath)
+
+            // !!! v6 scans everything under src/test/resources, including 'BrowserConfig.conf' and fails
+            // Because it's not a normal groovy script, but rather a Config script!
+            String configFilePath = 'BrowserConfig.conf'
+            configuration = new ConfigurationLoader(environment).getConf(configFilePath) // frameworkConfigFile.toURI().toURL(), Thread.currentThread().getContextClassLoader()
             theBrowser = new Browser(configuration)
             try {
                 binding.variables.putAll(configuration.rawConfig)
@@ -51,7 +62,7 @@ Before() { ScenarioImpl scenario ->
     }
 }
 
-After() { ScenarioImpl scenario ->
+After() { Scenario scenario ->
     scenarioEndTime = System.currentTimeMillis()
     long scenarioDuration = scenarioEndTime - scenarioStartTime
     bindingUpdater?.remove()
@@ -68,6 +79,7 @@ After() { ScenarioImpl scenario ->
     */
 }
 
+/*
 def publishToElastic(ScenarioImpl scenario, long scenarioDuration) {
     if (ElasticClient.instance.isActive()) {
         // save currently executed feature in Main
@@ -111,7 +123,7 @@ String getScenarioSource(CucumberTagStatement scenario) {
     def result = new StringBuilder()
     def formatter = new PrettyFormatter(result, true, false)
     TagStatement model = scenario?.gherkinModel
-    if (model instanceof Background) {
+    if (model instanceof Messages.GherkinDocument.Feature.Background) {
         formatter.background(model)
     }
     // ...
@@ -125,3 +137,4 @@ String getScenarioSource(CucumberTagStatement scenario) {
 List fetchTags(ScenarioImpl scenario) {
     scenario.sourceTagNames
 }
+*/
