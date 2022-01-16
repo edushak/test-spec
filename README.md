@@ -3,7 +3,7 @@
 
 **TODO**
 
-* download drivers on a fly into bin/
+* See Project on GitHub: https://github.com/edushak/test-spec/projects?type=beta
 
 
 Test-spec is a collection of general purpose Cucumber steps (implemented in Groovy).
@@ -17,7 +17,7 @@ Test-spec focuses on improving the second part.
 
 **Run examples**
 ```
-  gradlew testspec -Pfeatures=features/Command.feature
+  gradlew testspec -Dfeatures=features/Command.feature
   gradlew testspec -Dfeatures=features/Core.feature
   gradlew testspec -Dfeatures=features/Database.feature
   gradlew testspec -Dfeatures=features/Rest.feature
