@@ -47,5 +47,5 @@ jobs:
 
       # Upload test results
       - store_test_results:
-          path: /home/circleci/repo/build/reports/specs
+          path: build/reports/specs
           #/tmp/test-reports
