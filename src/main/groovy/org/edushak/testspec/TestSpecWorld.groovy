@@ -69,10 +69,10 @@ class TestSpecWorld {
         return element
     }
 
-    boolean isVar(String str) {
-        isVar(str, binding)
+    boolean isVariable(String str) {
+        isVariable(str, binding)
     }
-    static boolean isVar(String str, Binding binding) {
+    static boolean isVariable(String str, Binding binding) {
         str && str != '$' && binding.hasVariable(str)
     }
 
@@ -99,8 +99,8 @@ class TestSpecWorld {
         boolean isParametrizedIdentifier = isParametrizedIdentifier(input)
         if (isParametrizedIdentifier) {
             List tokens = input.tokenize('(')
-            if (isVar(tokens.first(), binding)) {
-                inputValue = var(tokens.first(), binding)
+            if (isVariable(tokens.first(), binding)) {
+                inputValue = variable(tokens.first(), binding)
             } else {
                 inputValue = input
                 isParametrizedIdentifier = false
@@ -112,8 +112,8 @@ class TestSpecWorld {
                         "It should look like: identifier('parameter')")
             }
         } else {
-            if (isVar(input, binding)) {
-                inputValue = var(input, binding)
+            if (isVariable(input, binding)) {
+                inputValue = variable(input, binding)
             } else {
                 inputValue = input
                 if (Helper.isSelector(input)) {
@@ -159,13 +159,13 @@ class TestSpecWorld {
     }
 
     static String normalizeValue(String value, Binding binding) {
-        var(noQuotes(value) as String, binding)
+        variable(Helper.noQuotes(value) as String, binding)
     }
 
-    Object var(String str) {
-        var(str, binding)
+    Object variable(String varName) {
+        variable(varName, binding)
     }
-    static Object var(String str, Binding binding) {
+    static Object variable(String str, Binding binding) {
         binding.hasVariable(str) ? binding.getVariable(str) : str
     }
 
