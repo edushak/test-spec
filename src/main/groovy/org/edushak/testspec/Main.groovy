@@ -17,12 +17,8 @@ import io.cucumber.core.runtime.Runtime
 class Main {
     static final List SUPPORTED_DATA_PROVIDERS = ['csv', 'excel', 'delimited'].asImmutable()
 
-    Main() {
-        log.info("inside Main constructor")
-    }
-
     static void main(String[] argv) {
-        log.info('inside Main.main({})', argv.inspect())
+        log.debug('inside Main.main({})', argv.inspect())
         byte exitStatus = run(argv, Thread.currentThread().getContextClassLoader());
         System.exit(exitStatus);
     }

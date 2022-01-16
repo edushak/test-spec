@@ -31,6 +31,7 @@ apply plugin: 'idea'
 repositories {
     mavenCentral()
 }
+
 group 'test-spec'
 version '0.0.1'
 
@@ -76,6 +77,8 @@ configurations {
     cucumberRuntime { extendsFrom testImplementation }
 }
 
+test { useJUnitPlatform() }
+
 task testspec() {
     dependsOn testClasses
     group = "TestSpec"
@@ -83,14 +86,15 @@ task testspec() {
     ext {
         featuresParam = ''
         tagsParam = ''
-        reportFileName = 'build/reports/Test-spec-report-' + UUID.randomUUID()
+        reportFileName = 'build/reports/specs/TEST-' + UUID.randomUUID()
     }
+
     doLast {
         // logger.debug("Inside task testspec()");
 
         // Mandatory param
-        if (System.getProperty('features')) { // || project.hasProperty('features')
-            featuresParam = System.getProperty('features') //  ?: project['features']
+        if (System.getProperty('features')) {
+            featuresParam = System.getProperty('features')
         } else {
             throw new RuntimeException("Missing mandatory parameter -Dfeatures=... !")
         }
@@ -99,38 +103,42 @@ task testspec() {
         }
 
         // Optional params
-        if (System.getProperty('tags')) { //  ?: project.hasProperty('tags')
-            tagsParam = ['--tags', System.getProperty('tags')] //  ?: project['tags']
+        if (System.getProperty('tags')) {
+            tagsParam = ['--tags', System.getProperty('tags')]
         }
 
         // TODO: plugins
+        try {
+            javaexec {
+                main = "org.edushak.testspec.Main"
+                classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
 
-        javaexec {
-            main = "org.edushak.testspec.Main"
-            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+                systemProperties System.getProperties() // pass all -D variables passed by user to a framework
+                systemProperty "projectDir", project.projectDir
 
-            systemProperties System.getProperties() // pass all -D variables passed by user to a framework
-            systemProperty "projectDir", project.projectDir
+                // TODO: to be able to view reports on SmartBear site,
+                //  user should login to https://reports.cucumber.io/ and paste here provided UUID:
+                //  systemProperty 'CUCUMBER_PUBLISH_TOKEN', '122f7fea-4727-4ea3-a8b1-e7b0eec08871'
 
-            // TODO: to be able to view reports on SmartBear site,
-            //  user should login to https://reports.cucumber.io/ and paste here provided UUID:
-            // systemProperty 'CUCUMBER_PUBLISH_TOKEN', '122f7fea-4727-4ea3-a8b1-e7b0eec08871'
-
-            // Check the full list of built-in plugins in io.cucumber.core.options.PluginOption
-            args = [
-                '--plugin', 'pretty',
-                '--plugin', "html:${reportFileName}.html",
-                // '--plugin', "timeline:${reportFileName}-timeline", // dir
-            ] + tagsParam + [featuresParam]
-            // '--glue', 'src/test/resources/userdefined'  // TODO: add extra glue directory inside framework
-        }
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            def reportFile = new File(projectDir, reportFileName + '.html')
-            if (reportFile.exists()) {
-                // open reportFile in browser
-                java.awt.Desktop.desktop.browse reportFile.toURI()
-            } else {
-                logger.warn("HTML Report File {} not found!", reportFile)
+                // Check the full list of built-in plugins in io.cucumber.core.options.PluginOption
+                args = [
+                        '--plugin', 'pretty',
+                        '--plugin', "html:${reportFileName}.html",
+                        '--plugin', "junit:${reportFileName}-junit.xml",
+                        // '--plugin', "timeline:${reportFileName}-timeline", // dir
+                ] + tagsParam + [featuresParam]
+                // '--glue', 'src/test/resources/userdefined'  // TODO: add extra glue directory inside framework
+            }
+        } finally {
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                def reportFile = new File(projectDir, reportFileName + '.html')
+                logger.info("")
+                logger.info("Opening HTML Report File {} in default browser", reportFile)
+                if (reportFile.exists()) {
+                    java.awt.Desktop.desktop.browse reportFile.toURI()
+                } else {
+                    logger.warn("HTML Report File {} not found!", reportFile)
+                }
             }
         }
     }
