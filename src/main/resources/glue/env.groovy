@@ -7,19 +7,12 @@ import geb.driver.DriverCreationException
 import io.cucumber.groovy.Scenario
 import org.edushak.testspec.TestSpecWorld
 import org.edushak.testspec.util.Helper
+import org.openqa.selenium.OutputType
+import org.openqa.selenium.TakesScreenshot
 
 import static io.cucumber.groovy.Hooks.Before
 import static io.cucumber.groovy.Hooks.After
 
-//import cucumber.runtime.ScenarioImpl
-//import cucumber.runtime.model.CucumberFeature
-//import cucumber.runtime.model.CucumberTagStatement
-//import gherkin.formatter.PrettyFormatter
-//import gherkin.formatter.model.Background
-//import gherkin.formatter.model.Result
-//import gherkin.formatter.model.TagStatement
-//import io.cucumber.core.plugin.PrettyFormatter
-//import io.cucumber.messages.Messages
 //import org.edushak.testspec.Scenario
 //import org.edushak.testspec.util.ElasticClient
 
@@ -67,16 +60,22 @@ After() { Scenario scenario ->
     long scenarioDuration = scenarioEndTime - scenarioStartTime
     bindingUpdater?.remove()
 
-    /*
-    List tags = scenario.sourceTagNames.collect { it.toLowerCase() }
-    Result failedResult = scenario.stepResults.find { it.status == 'failed' }
-    if (failedResult) {
-        // String featureLine = failedResult.error.stackTrace.last()
-        // todo: capture screenshot if failed on web step
+    // List tags = scenario.sourceTagNames.collect { it.toLowerCase() }
+    // Result failedResult = scenario.stepResults.find { it.status == 'failed' }
+
+    if (scenario.failed) {
+        if (theBrowser != null) {
+            // todo: capture screenshot and attach
+            if (theBrowser.getDriver() instanceof TakesScreenshot) {
+                def screenShot = ((TakesScreenshot) theBrowser.driver).getScreenshotAs(OutputType.BYTES);
+                scenario.attach(screenShot, "image/png", "screenshot")
+                // String featureLine = failedResult.error.stackTrace.last()
+            }
+        }
     }
 
-    publishToElastic(scenario, scenarioDuration)
-    */
+    // TODO: turn it into a plugin
+    // publishToElastic(scenario, scenarioDuration)
 }
 
 /*

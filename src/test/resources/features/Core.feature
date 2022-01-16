@@ -1,7 +1,6 @@
 Feature: CORE steps usage examples
 
   Usage:
-    gradlew testspec -Pfeatures=src/test/resources/features/Core.feature
     gradlew testspec -Dfeatures=features/Core.feature
 
 

@@ -116,12 +116,20 @@ class TestSpecWorld {
                 inputValue = variable(input, binding)
             } else {
                 inputValue = input
-                if (Helper.isSelector(input)) {
-
-                }
             }
         }
 
+        inputValue = resolveSelector(inputValue, isParametrizedIdentifier)
+
+        if (isParametrizedIdentifier || Helper.isClosure(inputValue)) {
+            inputValue = inputValue.trim()
+            inputValue += ".call($actualParameters);"
+        }
+
+        return inputValue
+    }
+
+    private static Object resolveSelector(inputValue, boolean isParametrizedIdentifier) {
         if (inputValue instanceof CharSequence) {
             boolean isParametrizedValue = inputValue instanceof CharSequence ? isParametrizedValue(inputValue) : false
             if (isParametrizedIdentifier && !isParametrizedValue) {
@@ -136,16 +144,10 @@ class TestSpecWorld {
             } else if (inputValue.contains('$x(')) {
                 inputValue = StringUtils.replace(inputValue.toString(), '$x(', '$(org.openqa.selenium.By.xpath(')
                 int lastClosingParentesis = inputValue.lastIndexOf(')')
-                inputValue = inputValue.substring(0,lastClosingParentesis) + ')' + inputValue.substring(lastClosingParentesis)
+                inputValue = inputValue.substring(0, lastClosingParentesis) + ')' + inputValue.substring(lastClosingParentesis)
             }
         }
-
-        if (isParametrizedIdentifier || Helper.isClosure(inputValue)) {
-            inputValue = inputValue.trim()
-            inputValue += ".call($actualParameters);"
-        }
-
-        return inputValue
+        inputValue
     }
 
     static boolean isParametrizedIdentifier(String input) {
@@ -178,7 +180,7 @@ class TestSpecWorld {
             if (lang == 'groovy') {
                 binding.__engines[lang] = new GroovyScriptEngineFactory().getScriptEngine()
             }
-            // TODO: add more lang support?
+            // TODO: support more languages ?
         }
         binding.__engines[lang]
     }
