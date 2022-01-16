@@ -47,4 +47,4 @@ jobs:
 
       # Upload test results - path: should be path under "working_directory", like build/, that's where SPock saves xml
       - store_test_results:
-          path: test-results
+          path: ~/build/test-results/test
