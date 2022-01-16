@@ -1,7 +1,7 @@
-Feature: Command steps usage examples
+Feature: CORE Command steps usage examples
 
   Usage:
-    gradlew testspec -Pfeatures=features/Command.feature
+    gradlew testspec -Dfeatures=features/Command.feature
 
 
   Scenario: call existing script

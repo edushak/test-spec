@@ -2,7 +2,7 @@ package glue
 
 import geb.navigator.Navigator
 import geb.waiting.WaitTimeoutException
-import static cucumber.api.groovy.EN.*
+import static io.cucumber.groovy.EN.*
 
 When(~/^I navigate to (.*)$/) { String url ->
     url = normalizeParameter(url)
@@ -48,6 +48,7 @@ Then(~/^web element (.*) should (have|contain) text (.*)$/) { String selector, S
         assert element.text()?.contains(expectedText)
     }
 }
+
 Then(~/^web elements (.*) should (have|contain) texts (.*)$/) { String selector, String operator, List<String> expectedText ->
     selector = normalizeParameter(selector)
     expectedText = expectedText.collect { normalizeParameter(it) }
@@ -59,7 +60,7 @@ Then(~/^web elements (.*) should (have|contain) texts (.*)$/) { String selector,
     }
 }
 
-And(~/^page should contain text: (.*)$/) { String expectedTestOnPage ->
+Then(~/^page should contain text: (.*)$/) { String expectedTestOnPage ->
     // Write code here that turns the phrase above into concrete actions
     expectedTestOnPage = noQuotes(expectedTestOnPage)
     assert theBrowser.driver.pageSource.contains(expectedTestOnPage)

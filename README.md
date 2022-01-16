@@ -1,9 +1,9 @@
+[![CircleCI](https://circleci.com/gh/edushak/test-spec.svg?style=svg)](https://circleci.com/gh/edushak/test-spec)
+
+
 **TODO**
 
-* Add HTML report
-* Upgrade to the newest Cucumber 6.10.4
-* Open HTML report automatically from within the framework
-* download drivers on a fly into bin/
+* See Project on GitHub: https://github.com/edushak/test-spec/projects?type=beta
 
 
 Test-spec is a collection of general purpose Cucumber steps (implemented in Groovy).
@@ -17,7 +17,7 @@ Test-spec focuses on improving the second part.
 
 **Run examples**
 ```
-  gradlew testspec -Pfeatures=features/Command.feature
+  gradlew testspec -Dfeatures=features/Command.feature
   gradlew testspec -Dfeatures=features/Core.feature
   gradlew testspec -Dfeatures=features/Database.feature
   gradlew testspec -Dfeatures=features/Rest.feature

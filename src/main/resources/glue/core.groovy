@@ -1,14 +1,14 @@
 package glue
 
-import cucumber.api.groovy.Hooks
 import groovy.sql.Sql
+import io.cucumber.groovy.Hooks
 import org.apache.commons.lang.time.DateUtils
 import org.edushak.testspec.TestSpecWorld
 import org.edushak.testspec.util.Helper
 
 import java.util.concurrent.TimeUnit
 
-import static cucumber.api.groovy.EN.*
+import static io.cucumber.groovy.EN.*
 
 Hooks.World {
     def world = new TestSpecWorld()
@@ -16,7 +16,8 @@ Hooks.World {
     TestSpecWorld.currentWorld = world
 }
 
-Given(~/^imported files (.*)$/) { List<String> files ->
+Given(~/^I import files (.*)$/) { String filesList ->
+    List<String> files = filesList.tokenize(',')
     files.each { String fileName ->
         File fileToImport = Helper.resolveFile(fileName, true);
         if (fileToImport.name.endsWith('.groovy')) {

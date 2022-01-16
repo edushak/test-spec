@@ -3,7 +3,7 @@ package glue
 import org.edushak.testspec.util.Helper
 import org.edushak.testspec.util.RestHelper
 
-import static cucumber.api.groovy.EN.*
+import static io.cucumber.groovy.EN.*
 
 final List builtInResponseFields = ['status','statusLine','contentType','reasonPhrase']
 

@@ -19,7 +19,7 @@ class  Helper {
     static final Properties SYSTEM_PROPERTIES
     static {
         SYSTEM_PROPERTIES = System.getProperties()
-        PROJECT_ROOT_DIR = SYSTEM_PROPERTIES['user.dir']
+        PROJECT_ROOT_DIR = SYSTEM_PROPERTIES['projectDir'] ?: SYSTEM_PROPERTIES['user.dir']
         MAIN_RESOURCES_DIR = PROJECT_ROOT_DIR + '/src/main/resources'
         TEST_RESOURCES_DIR = PROJECT_ROOT_DIR + '/src/test/resources'
     }
@@ -118,7 +118,7 @@ class  Helper {
         return replacedValues
     }
 
-    static File resolveFile(String filePath, boolean throwWhenNotFound) {
+    static File resolveFile(String filePath, boolean throwWhenNotFound = true) {
         File result = new File(filePath)
         if (result.exists()) {
             return result

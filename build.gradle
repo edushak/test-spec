@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 // https://docs.gradle.org/current/userguide/logging.html
 
 /*
@@ -29,8 +31,9 @@ apply plugin: 'idea'
 repositories {
     mavenCentral()
 }
+
 group 'test-spec'
-version '0.0.1'
+version '0.0.2'
 
 dependencies {
     implementation 'org.codehaus.groovy:groovy-all:3.0.9'
@@ -41,7 +44,6 @@ dependencies {
 
     implementation 'org.seleniumhq.selenium:selenium-support:4.1.1'
     implementation "org.seleniumhq.selenium:selenium-chrome-driver:4.1.1"
-
     /*
     implementation "org.seleniumhq.selenium:selenium-firefox-driver:${selenium_rev}"
     implementation "org.seleniumhq.selenium:selenium-ie-driver:${selenium_rev}"
@@ -49,30 +51,24 @@ dependencies {
     implementation "org.seleniumhq.selenium:selenium-server:${selenium_rev}"
     */
 
-    // TODO: upgrade
     // https://mvnrepository.com/artifact/io.cucumber/cucumber-groovy
-    // implementation group: 'io.cucumber', name: 'cucumber-groovy', version: '6.10.4'
-
-    implementation 'info.cukes:gherkin:2.12.2'
-    implementation 'info.cukes:cucumber-groovy:1.2.6'
-
-    // implementation "info.cukes:cucumber-java:${cucumber_rev}"
-    // implementation "info.cukes:cucumber-core:${cucumber_rev}"
-    // implementation "info.cukes:cucumber-junit:${cucumber_rev}"
-
-    implementation group: 'org.gebish', name: 'geb-core', version: '2.3.1'
+    implementation group: 'io.cucumber', name: 'cucumber-groovy', version: '6.10.4'
+    implementation (group: 'org.gebish', name: 'geb-core', version: '5.1') {
+        exclude(group: 'org.codehaus.groovy', module: 'groovy-bom')
+        exclude(group: 'org.codehaus.groovy', module: 'groovy-testng')
+    }
 
     // TODO: replace with Apache client
     // https://mvnrepository.com/artifact/org.codehaus.groovy.modules.http-builder/http-builder
     implementation group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
 
-    // TODO: choose one
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
     implementation group: 'net.sf.supercsv', name: 'super-csv', version: '2.4.0'
 
     implementation group: 'com.h2database', name: 'h2', version: '2.0.206'
     implementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.36.0.2'
 
+    // for reading Excel; TODO: remove, leave only CSV
     implementation 'org.apache.poi:poi:5.0.0'
     implementation 'org.apache.poi:poi-ooxml:5.0.0'
 
@@ -84,40 +80,69 @@ configurations {
     cucumberRuntime { extendsFrom testImplementation }
 }
 
+test { useJUnitPlatform() }
+
 task testspec() {
     dependsOn testClasses
     group = "TestSpec"
 
     ext {
         featuresParam = ''
+        tagsParam = ''
+        reportFileName = 'build/reports/specs/TEST-' + UUID.randomUUID()
     }
+
     doLast {
         // logger.debug("Inside task testspec()");
 
-        if (project.hasProperty('features')) {
-            featuresParam = project['features']
-        } else if (System.getProperty('features')) {
+        // Mandatory param
+        if (System.getProperty('features')) {
             featuresParam = System.getProperty('features')
         } else {
-            throw new RuntimeException("Missing mandatory parameter -Pfeatures=... !")
+            throw new RuntimeException("Missing mandatory parameter -Dfeatures=... !")
         }
         if (!((String)featuresParam).startsWith('src/test/resources')) {
             featuresParam = 'src/test/resources/' + featuresParam
         }
-        // TODO: tags
-        // TODO: plugins
 
-        javaexec {
-            main = "org.edushak.testspec.Main"
-            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
-            systemProperties System.getProperties() // pass all -D variables passed by user to a framework
-            args = [
-                '--plugin', 'pretty',
-                '--tags', '~@wip',
-                //'--tags', '~@Windows-only',
-                '--glue', 'src/main/resources/glue', // TODO: add inside framework
-                featuresParam
-            ]
+        // Optional params
+        if (System.getProperty('tags')) {
+            tagsParam = ['--tags', System.getProperty('tags')]
+        }
+
+        // TODO: plugins
+        try {
+            javaexec {
+                main = "org.edushak.testspec.Main"
+                classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+
+                systemProperties System.getProperties() // pass all -D variables passed by user to a framework
+                systemProperty "projectDir", project.projectDir
+
+                // TODO: to be able to view reports on SmartBear site,
+                //  user should login to https://reports.cucumber.io/ and paste here provided UUID:
+                //  systemProperty 'CUCUMBER_PUBLISH_TOKEN', '122f7fea-4727-4ea3-a8b1-e7b0eec08871'
+
+                // Check the full list of built-in plugins in io.cucumber.core.options.PluginOption
+                args = [
+                        '--plugin', 'pretty',
+                        '--plugin', "html:${reportFileName}.html",
+                        '--plugin', "junit:${reportFileName}-junit.xml",
+                        // '--plugin', "timeline:${reportFileName}-timeline", // dir
+                ] + tagsParam + [featuresParam]
+                // '--glue', 'src/test/resources/userdefined'  // TODO: add extra glue directory inside framework
+            }
+        } finally {
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                def reportFile = new File(projectDir, reportFileName + '.html')
+                logger.info("")
+                logger.info("Opening HTML Report File {} in default browser", reportFile)
+                if (reportFile.exists()) {
+                    java.awt.Desktop.desktop.browse reportFile.toURI()
+                } else {
+                    logger.warn("HTML Report File {} not found!", reportFile)
+                }
+            }
         }
     }
 }

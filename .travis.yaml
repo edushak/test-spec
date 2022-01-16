@@ -1,0 +1,8 @@
+language: groovy
+jdk:
+  - oraclejdk11
+services:
+  - docker
+jobs:
+  include:
+    - stage: test

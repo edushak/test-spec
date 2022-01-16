@@ -3,8 +3,8 @@ package org.edushak.testspec
 import geb.Browser
 import geb.Configuration
 import geb.binding.BindingUpdater
+import geb.navigator.DefaultNavigator // replaced in v3 import geb.navigator.NonEmptyNavigator
 import geb.navigator.Navigator
-import geb.navigator.NonEmptyNavigator
 import groovy.util.logging.Slf4j
 import groovyx.gpars.GParsPool
 import groovyx.gpars.dataflow.Promise
@@ -62,15 +62,17 @@ class TestSpecWorld {
     Navigator findElement(String selector) {
         Navigator element
         theBrowser.waitFor {
-            (element = Helper.evaluate("browser.${selector}", binding, true)).with { it != null && (it instanceof NonEmptyNavigator) }
+            (element = Helper.evaluate("browser.${selector}", binding, true)).with {
+                it != null && (it instanceof DefaultNavigator ) // DefaultNavigator replaced NonEmptyNavigator
+            }
         }
         return element
     }
 
-    boolean isVar(String str) {
-        isVar(str, binding)
+    boolean isVariable(String str) {
+        isVariable(str, binding)
     }
-    static boolean isVar(String str, Binding binding) {
+    static boolean isVariable(String str, Binding binding) {
         str && str != '$' && binding.hasVariable(str)
     }
 
@@ -97,8 +99,8 @@ class TestSpecWorld {
         boolean isParametrizedIdentifier = isParametrizedIdentifier(input)
         if (isParametrizedIdentifier) {
             List tokens = input.tokenize('(')
-            if (isVar(tokens.first(), binding)) {
-                inputValue = var(tokens.first(), binding)
+            if (isVariable(tokens.first(), binding)) {
+                inputValue = variable(tokens.first(), binding)
             } else {
                 inputValue = input
                 isParametrizedIdentifier = false
@@ -110,16 +112,24 @@ class TestSpecWorld {
                         "It should look like: identifier('parameter')")
             }
         } else {
-            if (isVar(input, binding)) {
-                inputValue = var(input, binding)
+            if (isVariable(input, binding)) {
+                inputValue = variable(input, binding)
             } else {
                 inputValue = input
-                if (Helper.isSelector(input)) {
-
-                }
             }
         }
 
+        inputValue = resolveSelector(inputValue, isParametrizedIdentifier)
+
+        if (isParametrizedIdentifier || Helper.isClosure(inputValue)) {
+            inputValue = inputValue.trim()
+            inputValue += ".call($actualParameters);"
+        }
+
+        return inputValue
+    }
+
+    private static Object resolveSelector(inputValue, boolean isParametrizedIdentifier) {
         if (inputValue instanceof CharSequence) {
             boolean isParametrizedValue = inputValue instanceof CharSequence ? isParametrizedValue(inputValue) : false
             if (isParametrizedIdentifier && !isParametrizedValue) {
@@ -134,16 +144,10 @@ class TestSpecWorld {
             } else if (inputValue.contains('$x(')) {
                 inputValue = StringUtils.replace(inputValue.toString(), '$x(', '$(org.openqa.selenium.By.xpath(')
                 int lastClosingParentesis = inputValue.lastIndexOf(')')
-                inputValue = inputValue.substring(0,lastClosingParentesis) + ')' + inputValue.substring(lastClosingParentesis)
+                inputValue = inputValue.substring(0, lastClosingParentesis) + ')' + inputValue.substring(lastClosingParentesis)
             }
         }
-
-        if (isParametrizedIdentifier || Helper.isClosure(inputValue)) {
-            inputValue = inputValue.trim()
-            inputValue += ".call($actualParameters);"
-        }
-
-        return inputValue
+        inputValue
     }
 
     static boolean isParametrizedIdentifier(String input) {
@@ -157,13 +161,13 @@ class TestSpecWorld {
     }
 
     static String normalizeValue(String value, Binding binding) {
-        var(noQuotes(value) as String, binding)
+        variable(Helper.noQuotes(value) as String, binding)
     }
 
-    Object var(String str) {
-        var(str, binding)
+    Object variable(String varName) {
+        variable(varName, binding)
     }
-    static Object var(String str, Binding binding) {
+    static Object variable(String str, Binding binding) {
         binding.hasVariable(str) ? binding.getVariable(str) : str
     }
 
@@ -176,7 +180,7 @@ class TestSpecWorld {
             if (lang == 'groovy') {
                 binding.__engines[lang] = new GroovyScriptEngineFactory().getScriptEngine()
             }
-            // TODO: add more lang support?
+            // TODO: support more languages ?
         }
         binding.__engines[lang]
     }
