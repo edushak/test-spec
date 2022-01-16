@@ -1,4 +1,4 @@
-Feature: Web search
+Feature: WEB: Web search
 
   Pre-requisite:
     User must have bin/chromedriver.exe present in project structure.
