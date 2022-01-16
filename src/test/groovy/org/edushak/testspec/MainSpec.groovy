@@ -1,10 +1,10 @@
 package org.edushak.testspec
 
-import groovy.json.JsonSlurper
 import spock.lang.Ignore
 
 class MainSpec extends BaseSpec {
 
+/*
     def "loadTestCases"() {
         given:
         String examplesDescription = '''
@@ -22,6 +22,7 @@ class MainSpec extends BaseSpec {
             ['2', 'Leo', 'New Jersey']
         ]
     }
+*/
 
     @Ignore
     def "buildCucumberRows"() {

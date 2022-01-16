@@ -3,8 +3,8 @@ package org.edushak.testspec
 import geb.Browser
 import geb.Configuration
 import geb.binding.BindingUpdater
+import geb.navigator.DefaultNavigator // replaced in v3 import geb.navigator.NonEmptyNavigator
 import geb.navigator.Navigator
-import geb.navigator.NonEmptyNavigator
 import groovy.util.logging.Slf4j
 import groovyx.gpars.GParsPool
 import groovyx.gpars.dataflow.Promise
@@ -62,7 +62,9 @@ class TestSpecWorld {
     Navigator findElement(String selector) {
         Navigator element
         theBrowser.waitFor {
-            (element = Helper.evaluate("browser.${selector}", binding, true)).with { it != null && (it instanceof NonEmptyNavigator) }
+            (element = Helper.evaluate("browser.${selector}", binding, true)).with {
+                it != null && (it instanceof DefaultNavigator ) // DefaultNavigator replaced NonEmptyNavigator
+            }
         }
         return element
     }

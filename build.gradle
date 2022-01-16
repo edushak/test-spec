@@ -49,18 +49,9 @@ dependencies {
     implementation "org.seleniumhq.selenium:selenium-server:${selenium_rev}"
     */
 
-    // TODO: upgrade
     // https://mvnrepository.com/artifact/io.cucumber/cucumber-groovy
-    // implementation group: 'io.cucumber', name: 'cucumber-groovy', version: '6.10.4'
-
-    implementation 'info.cukes:gherkin:2.12.2'
-    implementation 'info.cukes:cucumber-groovy:1.2.6'
-
-    // implementation "info.cukes:cucumber-java:${cucumber_rev}"
-    // implementation "info.cukes:cucumber-core:${cucumber_rev}"
-    // implementation "info.cukes:cucumber-junit:${cucumber_rev}"
-
-    implementation group: 'org.gebish', name: 'geb-core', version: '2.3.1'
+    implementation group: 'io.cucumber', name: 'cucumber-groovy', version: '6.10.4'
+    implementation group: 'org.gebish', name: 'geb-core', version: '3.4.1' // 2.3.1
 
     // TODO: replace with Apache client
     // https://mvnrepository.com/artifact/org.codehaus.groovy.modules.http-builder/http-builder
@@ -90,34 +81,40 @@ task testspec() {
 
     ext {
         featuresParam = ''
+        tagsParam = ''
     }
     doLast {
         // logger.debug("Inside task testspec()");
 
-        if (project.hasProperty('features')) {
-            featuresParam = project['features']
-        } else if (System.getProperty('features')) {
-            featuresParam = System.getProperty('features')
+        // Mandatory param
+        if (System.getProperty('features')) { // || project.hasProperty('features')
+            featuresParam = System.getProperty('features') //  ?: project['features']
         } else {
-            throw new RuntimeException("Missing mandatory parameter -Pfeatures=... !")
+            throw new RuntimeException("Missing mandatory parameter -Dfeatures=... !")
         }
         if (!((String)featuresParam).startsWith('src/test/resources')) {
             featuresParam = 'src/test/resources/' + featuresParam
         }
-        // TODO: tags
+
+        // Optional params
+        if (System.getProperty('tags')) { //  ?: project.hasProperty('tags')
+            tagsParam = ['--tags', System.getProperty('tags')] //  ?: project['tags']
+        }
+
         // TODO: plugins
 
         javaexec {
             main = "org.edushak.testspec.Main"
             classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+
             systemProperties System.getProperties() // pass all -D variables passed by user to a framework
+            systemProperty "projectDir", project.projectDir
+            systemProperty 'CUCUMBER_PUBLISH_TOKEN', '122f7fea-4727-4ea3-a8b1-e7b0eec08871'
+
             args = [
                 '--plugin', 'pretty',
-                '--tags', '~@wip',
-                //'--tags', '~@Windows-only',
-                '--glue', 'src/main/resources/glue', // TODO: add inside framework
-                featuresParam
-            ]
+            ] + tagsParam + [featuresParam]
+            // '--glue', 'src/main/resources/glue'  // TODO: add inside framework
         }
     }
 }

@@ -2,7 +2,7 @@ package glue
 
 import groovy.sql.Sql
 
-import static cucumber.api.groovy.EN.*
+import static io.cucumber.groovy.EN.*
 
 When(~/^I execute statements on database (.*):$/) { String dbAlias, String query ->
     Map config = binding['databases'][dbAlias]

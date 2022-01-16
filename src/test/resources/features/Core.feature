@@ -6,7 +6,7 @@ Feature: CORE steps usage examples
 
 
   Scenario: import scripts
-    Given imported files features/Core.groovy,features/variables.dictionary,features/variables.properties
+    Given I import files features/Core.groovy,features/variables.dictionary,features/variables.properties
     Then I execute code "to verify that Core.groovy got imported":
     """
     assert add(3,4) == 7

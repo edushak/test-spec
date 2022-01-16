@@ -1,30 +1,95 @@
 package org.edushak.testspec
 
-import cucumber.runtime.ClassFinder
-import cucumber.runtime.Runtime
-import cucumber.runtime.RuntimeOptions
-import cucumber.runtime.io.MultiLoader
-import cucumber.runtime.io.ResourceLoader
-import cucumber.runtime.io.ResourceLoaderClassFinder
-import cucumber.runtime.model.CucumberExamples
-import cucumber.runtime.model.CucumberScenarioOutline
-import cucumber.runtime.model.CucumberTagStatement
-import gherkin.formatter.model.Examples
-import gherkin.formatter.model.ExamplesTableRow
-import groovy.json.JsonSlurper
+//import cucumber.runtime.ClassFinder
+//import cucumber.runtime.Runtime
+//import cucumber.runtime.RuntimeOptions
+//import cucumber.runtime.io.MultiLoader
+//import cucumber.runtime.io.ResourceLoader
+//import cucumber.runtime.io.ResourceLoaderClassFinder
 import groovy.util.logging.Slf4j
-import org.edushak.testspec.util.Helper
+import io.cucumber.core.options.CommandlineOptionsParser
+import io.cucumber.core.options.CucumberProperties
+import io.cucumber.core.options.CucumberPropertiesParser
+import io.cucumber.core.options.RuntimeOptions
+import io.cucumber.core.runtime.Runtime
 
 @Slf4j
 class Main {
     static final List SUPPORTED_DATA_PROVIDERS = ['csv', 'excel', 'delimited'].asImmutable()
 
     Main() {
+        log.info("inside Main constructor")
     }
 
+    static void main(String[] argv) {
+        log.info('inside Main.main({})', argv.inspect())
+        byte exitStatus = run(argv, Thread.currentThread().getContextClassLoader());
+        System.exit(exitStatus);
+    }
+
+    /**
+     * Launches the Cucumber-JVM command line.
+     *
+     * @param  argv runtime options. See details in the
+     *              {@code cucumber.api.cli.Usage.txt} resource.
+     * @return      0 if execution was successful, 1 if it was not (test
+     *              failures)
+     */
+    public static byte run(String... argv) {
+        return run(argv, Thread.currentThread().getContextClassLoader());
+    }
+
+    /**
+     * Launches the Cucumber-JVM command line.
+     *
+     * @param  argv        runtime options. See details in the
+     *                     {@code cucumber.api.cli.Usage.txt} resource.
+     * @param  classLoader classloader used to load the runtime
+     * @return             0 if execution was successful, 1 if it was not (test
+     *                     failures)
+     */
+    public static byte run(String[] argv, ClassLoader classLoader) {
+        RuntimeOptions propertiesFileOptions = new CucumberPropertiesParser()
+                .parse(CucumberProperties.fromPropertiesFile())
+                .build();
+
+        RuntimeOptions environmentOptions = new CucumberPropertiesParser()
+                .parse(CucumberProperties.fromEnvironment())
+                .build(propertiesFileOptions);
+
+        RuntimeOptions systemOptions = new CucumberPropertiesParser()
+                .parse(CucumberProperties.fromSystemProperties())
+                .build(environmentOptions);
+
+        CommandlineOptionsParser commandlineOptionsParser = new CommandlineOptionsParser(System.out);
+        RuntimeOptions runtimeOptions = commandlineOptionsParser
+                .parse(argv)
+                .addDefaultGlueIfAbsent()
+                .addDefaultFeaturePathIfAbsent()
+                .addDefaultFormatterIfAbsent()
+                .addDefaultSummaryPrinterIfAbsent()
+                .enablePublishPlugin()
+                .build(systemOptions);
+
+        Optional<Byte> exitStatus = commandlineOptionsParser.exitStatus();
+        if (exitStatus.isPresent()) {
+            return exitStatus.get();
+        }
+
+        final Runtime runtime = Runtime.builder()
+                .withRuntimeOptions(runtimeOptions)
+                .withClassLoader(() -> classLoader)
+                .build();
+
+        runtime.run();
+        return runtime.exitStatus();
+    }
+
+/*
     static void main(String[] argv) throws Throwable {
-        byte exitstatus = run(argv, Thread.currentThread().getContextClassLoader());
-        System.exit(exitstatus);
+        // new io.cucumber.core.cli.Main()
+        byte exitStatus = run(argv, Thread.currentThread().getContextClassLoader());
+        System.exit(exitStatus);
     }
 
     static byte run(String[] argv, ClassLoader classLoader) throws IOException {
@@ -64,16 +129,6 @@ class Main {
         }
     }
 
-    static List<ExamplesTableRow> buildCucumberRows(List<List> dataRows, Examples examples) {
-        List<ExamplesTableRow> cucumberRows = []
-        dataRows.eachWithIndex { List<String> row, int index ->
-            if (!row.findAll { !it.trim().empty }.empty) {
-                cucumberRows.add(new ExamplesTableRow(examples.comments, row, examples.line, examples.id))
-            }
-        }
-        cucumberRows
-    }
-
     static List<List> loadTestCases(examplesDescJson) {
         String dataprovider = examplesDescJson.dataprovider.toLowerCase()
 
@@ -106,4 +161,16 @@ class Main {
         Helper.replaceAll(dataRows, null, '')
         dataRows
     }
+
+    static List<ExamplesTableRow> buildCucumberRows(List<List> dataRows, Examples examples) {
+        List<ExamplesTableRow> cucumberRows = []
+        dataRows.eachWithIndex { List<String> row, int index ->
+            if (!row.findAll { !it.trim().empty }.empty) {
+                cucumberRows.add(new ExamplesTableRow(examples.comments, row, examples.line, examples.id))
+            }
+        }
+        cucumberRows
+    }
+*/
+
 }
