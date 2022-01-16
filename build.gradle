@@ -53,7 +53,10 @@ dependencies {
 
     // https://mvnrepository.com/artifact/io.cucumber/cucumber-groovy
     implementation group: 'io.cucumber', name: 'cucumber-groovy', version: '6.10.4'
-    implementation group: 'org.gebish', name: 'geb-core', version: '5.1'
+    implementation (group: 'org.gebish', name: 'geb-core', version: '5.1') {
+        exclude(group: 'org.codehaus.groovy', module: 'groovy-bom')
+        exclude(group: 'org.codehaus.groovy', module: 'groovy-testng')
+    }
 
     // TODO: replace with Apache client
     // https://mvnrepository.com/artifact/org.codehaus.groovy.modules.http-builder/http-builder
