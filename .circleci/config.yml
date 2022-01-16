@@ -44,3 +44,8 @@ jobs:
 
       # run tests!
       - run: gradle test
+
+      # Upload test results
+      - store_test_results:
+          path: /home/circleci/repo/build/reports/specs
+          #/tmp/test-reports
