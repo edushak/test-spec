@@ -6,4 +6,3 @@ services:
 jobs:
   include:
     - stage: test
-      script: ./mvnw clean test
